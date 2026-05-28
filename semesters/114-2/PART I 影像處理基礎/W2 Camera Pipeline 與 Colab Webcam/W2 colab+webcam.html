@@ -1,0 +1,165 @@
+<div style="font-family: &quot;Helvetica Neue&quot;, Helvetica, Arial, 微軟正黑體, sans-serif; line-height: 1.6; color: rgb(51, 65, 85); background-color: rgb(255, 255, 255); overflow: hidden;">
+    <div style="background-color: rgb(15, 23, 42);">
+        <h1 style="color: rgb(255, 255, 255); font-size: 28px; font-weight: bold;"><a class="" href="https://gemini.google.com/share/2853b56c4644" target="_blank">網頁版</a><br></h1>
+        <h1 style="color: rgb(255, 255, 255); font-size: 28px; font-weight: bold;">            🔬進階電腦視覺實作        </h1>
+        <h2 style="color: rgb(148, 163, 184); font-size: 20px; font-weight: normal;">Google Colab 影像串流架構指南</h2>
+        <div style="background-color: rgb(30, 41, 59);">
+            <p style="color: rgb(203, 213, 225); font-size: 14px;">🎯 <strong>適用對象：</strong>電腦視覺、深度學習領域之研究生</p>
+            <p style="color: rgb(203, 213, 225); font-size: 14px;">💡 <strong>核心主題：</strong>突破 Colab 硬體限制，解析高階攝影機 (如 SID 2880x1440) 聯動策略</p>
+        </div>
+    </div>
+    <div>
+        <div>
+            <h3 style="color: rgb(15, 23, 42); font-size: 22px;">                <span style="color: rgb(59, 130, 246);">❶</span> 系統架構與資料流 (Data Flow)            </h3>
+            <p>在 Colab 上處理即時影像時，理解資料流是掌握效能瓶頸（如網路延遲、瀏覽器解碼限制）的關鍵。實務上有兩種截然不同的系統架構：</p>
+            <div style="background-color: rgb(239, 246, 255);">
+                <p style="color: rgb(30, 64, 175); font-weight: bold; font-size: 14px;">📖 推薦閱讀 (傳統作法參考)</p> <a href="https://omnixri.medium.com/%E5%A6%82%E4%BD%95%E5%9C%A8google-colab%E4%B8%8A%E4%BD%BF%E7%94%A8%E6%9C%AC%E5%9C%B0%E7%AB%AFwebcam%E5%8D%B3%E6%99%82%E9%81%8B%E8%A1%8Copencv%E8%87%AA%E5%AE%9A%E7%BE%A9%E5%BD%B1%E5%83%8F%E8%99%95%E7%90%86%E5%87%BD%E5%BC%8F-9870d59c676"
+                target="_blank" style="color: rgb(37, 99, 235); text-decoration: underline; font-size: 14px;">如何在 Google Colab 上使用本地端 Webcam 即時運行 OpenCV 自定義影像處理函式 (Jack OmniXRI)</a> </div>
+            <div style="overflow: hidden;">
+                <div style="background-color: rgb(248, 250, 252);">
+                    <h4 style="color: rgb(51, 65, 85); font-size: 18px;">☁️ 傳統雲端架構 <span style="font-size: 14px; font-weight: normal; color: rgb(100, 116, 139);">極耗頻寬的雙向傳輸</span></h4> </div>
+                <div>
+                    <p style="font-size: 15px;"><strong>傳輸路徑：</strong> 本地 Webcam ➔ 瀏覽器轉 Base64 ➔ Google 雲端 ➔ Python 運算 ➔ 轉 Base64 傳回 ➔ 瀏覽器顯示。</p>
+                    <div style="background-color: rgb(255, 241, 242);">
+                        <p style="color: rgb(190, 18, 60); font-size: 14px;"><strong>⚠️ 效能瓶頸：</strong> 矩陣與字串的轉換及網路傳輸會造成嚴重延遲。面對 2880x1440 H.264 等高解析編碼，瀏覽器媒體引擎常因解碼能力不足拋出 <code style="background-color: rgb(255, 255, 255); color: rgb(225, 29, 72);">NotReadableError</code>。</p>
+                    </div>
+                </div>
+            </div>
+            <div style="overflow: hidden;">
+                <div style="background-color: rgb(236, 253, 245);">
+                    <h4 style="color: rgb(6, 95, 70); font-size: 18px;">💻 雲端與本地聯動架構 <span style="font-size: 14px; font-weight: normal; color: rgb(5, 150, 105);">Local Runtime：零網路延遲</span></h4> </div>
+                <div>
+                    <p style="font-size: 15px;"><strong>傳輸路徑：</strong> 本地 Jupyter (Python) ➔ OpenCV 控制硬體 ➔ 本地 RAM/GPU 運算 ➔ 本地螢幕彈出視窗。</p>
+                    <div style="background-color: rgb(236, 253, 245);">
+                        <p style="color: rgb(4, 120, 87); font-size: 14px;"><strong>✅ 效能優勢：</strong> 影像流完全本地化，Colab 僅傳送「程式碼」，不佔用網路頻寬。可達即時 (Real-time) 標準，完全繞過瀏覽器的解碼天花板。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h3 style="color: rgb(15, 23, 42); font-size: 22px;">                <span style="color: rgb(59, 130, 246);">❷</span> 兩種架構優缺點綜合比較            </h3>
+            <div>
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 15px;">
+                    <colgroup>
+                        <col>
+                            <col>
+                                <col>
+                    </colgroup>
+                    <thead>
+                        <tr style="background-color: rgb(241, 245, 249);">
+                            <th>評估維度</th>
+                            <th>☁️ 傳統雲端架構</th>
+                            <th>💻 聯動架構 (Local Runtime)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>網路頻寬消耗</td>
+                            <td><strong style="color: rgb(225, 29, 72);">極高。</strong> 每一幀皆須 Base64 雙向傳輸。實驗室多人環境極易癱瘓網路。</td>
+                            <td><strong style="color: rgb(5, 150, 105);">極低。</strong> 影像流本地化，不消耗外部網路頻寬。</td>
+                        </tr>
+                        <tr>
+                            <td>運算與傳輸延遲</td>
+                            <td><strong style="color: rgb(225, 29, 72);">高 (Latency)。</strong> 受限網路速度與 Base64 序列化 CPU 負擔。</td>
+                            <td><strong style="color: rgb(5, 150, 105);">極低 (Zero Latency)。</strong> 效能取決於本地硬體，達即時處理標準。</td>
+                        </tr>
+                        <tr>
+                            <td>硬體相容性限制</td>
+                            <td><strong style="color: rgb(225, 29, 72);">受限於瀏覽器。</strong> Chrome 無法處理特殊高解析編碼，易觸發錯誤。</td>
+                            <td><strong style="color: rgb(5, 150, 105);">完整控制權。</strong> Python 在本地執行，直接呼叫底層驅動，無解碼限制。</td>
+                        </tr>
+                        <tr>
+                            <td>環境部署成本</td>
+                            <td><strong style="color: rgb(5, 150, 105);">極低。</strong> 隨開即用，無需安裝任何環境，適合無基礎體驗。</td>
+                            <td><strong style="color: rgb(225, 29, 72);">較高。</strong> 需自行配置 Python 虛擬環境與 CORS 設定。</td>
+                        </tr>
+                        <tr>
+                            <td>資源衝突防範</td>
+                            <td>需注意攝影機是否被其他軟體 (OBS, Zoom) 獨佔。</td>
+                            <td><strong>關鍵地雷：</strong>執行前<strong style="color: rgb(225, 29, 72); text-decoration: underline;">必須關閉網址列相機授權</strong>，否則導致資源衝突。</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div>
+            <h3 style="color: rgb(15, 23, 42); font-size: 22px;">                <span style="color: rgb(59, 130, 246);">❸</span> 聯動架構建置流程 (Local Runtime)            </h3>
+            <p style="background-color: rgb(255, 251, 235); color: rgb(180, 83, 9); font-weight: bold;"> 💡 請在學生的「本地電腦（PC/筆電）」上開啟終端機（如 Anaconda Prompt 或 PowerShell）依序執行以下步驟： </p>
+            <div>
+                <h4 style="color: rgb(15, 23, 42); font-size: 18px;">Step 1: 建立獨立虛擬環境</h4>
+                <p style="color: rgb(71, 85, 105); font-size: 15px;">為避免套件衝突（例如新版 NumPy 可能導致 pandas 不相容），強烈建議使用 Conda 建立獨立環境。</p>
+                <div style="background-color: rgb(15, 23, 42);"> <pre class="undefined hljs language-apache" style="color: rgb(16, 185, 129); font-family: Consolas, monospace; font-size: 14px;"><code><span class="hljs-attribute">conda</span> create -n colab_cv python=<span class="hljs-number">3</span>.<span class="hljs-number">11</span>
+<span class="hljs-attribute">conda</span> activate colab_cv</code></pre> </div>
+            </div>
+            <div>
+                <h4 style="color: rgb(15, 23, 42); font-size: 18px;">Step 2: 安裝核心套件與橋接工具</h4>
+                <p style="color: rgb(71, 85, 105); font-size: 15px;">安裝 OpenCV、鎖定 NumPy 版本，並安裝負責串接 Colab 網頁與本地 Jupyter 的 WebSocket 套件。</p>
+                <div style="background-color: rgb(15, 23, 42);"> <pre class="undefined hljs language-mipsasm" style="color: rgb(16, 185, 129); font-family: Consolas, monospace; font-size: 14px;"><code>pip <span class="hljs-keyword">install </span>opencv-python <span class="hljs-string">"numpy&lt;2"</span> <span class="hljs-keyword">jupyter_http_over_ws
+</span><span class="hljs-keyword">jupyter </span>server <span class="hljs-keyword">extension </span>enable --py <span class="hljs-keyword">jupyter_http_over_ws</span></code></pre> </div>
+            </div>
+            <div>
+                <h4 style="color: rgb(5, 150, 105); font-size: 18px;">Step 3: 啟動本地 Jupyter 伺服器 (關鍵)</h4>
+                <p style="color: rgb(71, 85, 105); font-size: 15px;">這段指令是成功的核心。必須處理 <strong>CORS (跨來源資源共用)</strong> 允許 Colab 網域存取本地 port，並設定空 Token 簡化握手流程。</p>
+                <div style="background-color: rgb(15, 23, 42);"> <pre class="undefined hljs language-routeros" style="color: rgb(16, 185, 129); font-family: Consolas, monospace; font-size: 14px; white-space: pre-wrap;"><code>jupyter notebook --NotebookApp.<span class="hljs-attribute">allow_origin</span>=<span class="hljs-string">'https://colab.research.google.com'</span> --NotebookApp.<span class="hljs-attribute">port_retries</span>=0 --NotebookApp.<span class="hljs-attribute">token</span>=<span class="hljs-string">''</span> --NotebookApp.<span class="hljs-attribute">disable_check_xsrf</span>=<span class="hljs-literal">True</span> <span class="hljs-attribute">--port</span>=8888</code></pre>                    </div>
+            </div>
+            <div>
+                <h4 style="color: rgb(15, 23, 42); font-size: 18px;">Step 4: Colab 網頁端連線</h4>
+                <ul style="color: rgb(71, 85, 105); font-size: 15px; background-color: rgb(248, 250, 252);">
+                    <li>回到瀏覽器的 Google Colab 頁面。</li>
+                    <li>點擊右上角「連線」按鈕旁邊的下拉箭頭，選擇 <strong>「連線至本地執行階段 (Connect to local runtime)」</strong>。</li>
+                    <li>輸入網址：<code style="background-color: rgb(226, 232, 240); color: rgb(15, 23, 42);"><a href="http://localhost:8888/" target="_blank">http://localhost:8888/</a></code></li>
+                    <li>當右上角圖示變成「綠色勾勾的小電腦」即代表連線成功。</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <h3 style="color: rgb(15, 23, 42); font-size: 22px;">                <span style="color: rgb(59, 130, 246);">❹</span> 底層除錯腳本            </h3>
+            <p style="color: rgb(71, 85, 105); font-size: 15px;">當轉換至 Local Runtime 後，若出現無法讀取攝影機的狀況，請複製以下 Python 程式碼在 Colab 儲存格中執行。這段腳本會利用 DirectShow 遍歷系統硬體，幫助您尋找高階設備正確的 Index 編號。</p>
+            <div style="background-color: rgb(15, 23, 42); overflow: hidden;">
+                <div style="background-color: rgb(30, 41, 59); display: flex;"> <span style="color: rgb(226, 232, 240); font-size: 14px; font-weight: bold;">🐍 本地端硬體自動掃描腳本.py</span> <span style="background-color: rgb(51, 65, 85); color: rgb(148, 163, 184); font-size: 12px;">請手動反白複製程式碼</span> </div>
+                <div><pre class="undefined hljs language-routeros" style="color: rgb(74, 222, 128); font-family: Consolas, Monaco, monospace; font-size: 14px; line-height: 1.5;"><code>import cv2
+import numpy as np
+
+def run_interactive_camera_scan():
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">"正在掃描本地可用攝影機硬體...\n"</span>)
+    available_cams = []
+    
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(6):
+        # 優先嘗試 DirectShow (Windows 最佳實務)
+        cap = cv2.VideoCapture(i, cv2.CAP_DSHOW)
+        
+        <span class="hljs-keyword">if</span> cap.isOpened():
+            w = int(cap.<span class="hljs-built_in">get</span>(cv2.CAP_PROP_FRAME_WIDTH))
+            h = int(cap.<span class="hljs-built_in">get</span>(cv2.CAP_PROP_FRAME_HEIGHT))
+            available_cams.append((i, w, h))
+            cap.release()
+        <span class="hljs-keyword">else</span>:
+            # 回退預設後端
+            cap = cv2.VideoCapture(i)
+            <span class="hljs-keyword">if</span> cap.isOpened():
+                w = int(cap.<span class="hljs-built_in">get</span>(cv2.CAP_PROP_FRAME_WIDTH))
+                h = int(cap.<span class="hljs-built_in">get</span>(cv2.CAP_PROP_FRAME_HEIGHT))
+                available_cams.append((i, w, h))
+                cap.release()
+                
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> available_cams:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">"❌ 找不到攝影機。請確認硬體連線，或瀏覽器相機授權是否已「關閉」。"</span>)
+        return
+
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">"--- 偵測到的硬體清單 ---"</span>)
+    <span class="hljs-keyword">for</span> idx, w, h <span class="hljs-keyword">in</span> available_cams:
+        <span class="hljs-keyword">if</span> w &gt;= 2880:
+            <span class="hljs-built_in">info</span> = <span class="hljs-string">"[高階設備] SID 等級"</span>
+        elif w == 0:
+            <span class="hljs-built_in">info</span> = <span class="hljs-string">"[虛擬設備] 可能為未啟動的轉接裝置"</span>
+        <span class="hljs-keyword">else</span>:
+            <span class="hljs-built_in">info</span> = <span class="hljs-string">"[標準設備]"</span>
+        <span class="hljs-built_in">print</span>(f<span class="hljs-string">"Index [{idx}]: ({w} x {h}) -&gt; {info}"</span>)
+
+<span class="hljs-comment"># 執行掃描程式</span>
+run_interactive_camera_scan()</code></pre> </div>
+            </div>
+        </div>
+    </div>
+    <div style="background-color: rgb(248, 250, 252); text-align: center; color: rgb(100, 116, 139); font-size: 13px;"> 設計給予電腦視覺、深度學習領域之研究生進階實作使用。 </div>
+</div>

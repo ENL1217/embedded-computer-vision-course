@@ -1,0 +1,29 @@
+<p>1. Android安裝與基礎開發環境設定(請先看到ch7，建立可模擬可實體手機運行除錯環境)</p>
+<p><a class="" href="https://www.youtube.com/playlist?list=PL9muXAsyRXOGY2SWvI6VtUzQ3q4x-fAsK" target="_blank">2025 最新 Android Studio 開發 Android APP 手機應用程式教學</a>
+    <br>
+</p>
+<p><a class="" href="https://developer.android.com/codelabs/basic-android-kotlin-compose-install-android-studio?hl=zh-tw#0" target="_blank">下載並安裝 Android Studio</a>
+    <br>
+</p>
+<p>
+    <br>
+</p>
+<p>2. 建構Chaquopy開發環境，在Android上執行Python程式</p>
+<p><a href="https://www.youtube.com/watch?v=igJgXeV82b4&amp;list=PL1KT-ofSrkBkfYP4ihwxofu9jWF7EChXb&amp;index=2" target="_blank">PYTHON Java Together: Setup WORKING Android | 2025 Chaquopy</a>
+    <br>
+</p>
+<p>
+    <br>
+</p>
+<p>若不想進行環境設定，亦可直接下載專案()</p>
+<p><a class="" href="https://www.youtube.com/watch?v=oKJ03xq3bOk" target="_blank">How to Use Python in Android App | Chaquopy Setup in Android Studio (2025 Guide)</a>
+    <br>
+</p>
+<p><a class="" href="https://github.com/chaquo/chaquopy-matplotlib" target="_blank" style="color: rgb(61, 129, 219); background: rgb(179, 212, 253); font-family: arial, sans-serif; font-size: 14px;">chaquo/chaquopy-matplotlib: Chaquopy Matplotlib example</a>
+    <br>
+</p>
+<p>
+    <br>
+</p>
+<p>3. Android上透過Chquopyg執行Python OpenCV程式</p>
+<p><a class="" href="https://www.youtube.com/watch?v=hxXIuiHLubU&amp;list=PL1KT-ofSrkBkfYP4ihwxofu9jWF7EChXb&amp;index=3" target="_blank" style="font-family: inherit; font-size: 1rem; background-color: transparent;">OPENCV Chaquopy Integration: 2026 WORKING on Android!</a></p>

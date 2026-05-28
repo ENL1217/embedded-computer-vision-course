@@ -1,0 +1,55 @@
+作業練習：透過 Google Colab 讀取並顯示影像
+一、作業目標
+本作業目的是讓同學熟悉在 Google Colab 環境中，透過 OpenCV (cv2) 讀取影像、顯示影像以及儲存影像，並學習如何將 Google Drive 與 Colab 進行連結。
+
+二、作業內容
+使用 Google Colab 建立新的 Python Notebook。
+將 Google Drive 掛載至 Colab。
+切換到自訂資料夾 (例如)：
+/content/drive/My Drive/Colab Notebooks/Image Process
+確認資料夾內容。
+讀取自訂影像檔，例如 Lenna.bmp。
+檢查檔案是否存在。
+以灰階模式讀取影像。
+顯示影像尺寸。
+顯示影像。
+將影像儲存為 resize.jpg。
+三、參考程式碼
+# 匯入套件
+import os
+import cv2
+from google.colab.patches import cv2_imshow
+
+# 掛載 Google Drive
+from google.colab import drive
+drive.mount('/content/drive')
+
+# 切換至指定資料夾
+os.chdir('/content/drive/My Drive/Colab Notebooks/Image Process')
+
+# 查看資料夾內容
+os.listdir()
+
+# 設定影像路徑
+image_path = "Lenna.bmp"
+
+# 檢查檔案是否存在
+if not os.path.exists(image_path):
+    print("Error: Image file not found:", image_path)
+    exit()
+
+# 讀取影像 (灰階)
+image = cv2.imread(image_path, 0)
+
+# 顯示影像尺寸
+print(image.shape)
+
+# 顯示影像
+cv2_imshow(image)
+
+# 儲存影像
+cv2.imwrite('resize.jpg', image)
+五、注意事項
+請確認測試圖片 Lenna.bmp 已放置於指定資料夾。
+若檔案不存在，程式應顯示錯誤訊息。
+請依照步驟執行並觀察執行結果，若有問題可詢問 Colab 的 Gemini 或老師。
