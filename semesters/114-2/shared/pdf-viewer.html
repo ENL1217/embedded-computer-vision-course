@@ -153,6 +153,32 @@
       document.getElementById('filename').textContent = filename;
       document.title = filename + ' ｜ 教材檢視';
 
+      // 偵測 file:// 協定 (本地開啟,PDF.js 會被 CORS 擋)
+      const isLocalFile = location.protocol === 'file:';
+
+      if (isLocalFile) {
+        // Fallback: 直接用 <embed> 開啟,雖然失去 Layer 1 但本地 dev 可看
+        document.querySelector('.viewer-controls').style.display = 'none';
+        content.style.display = 'none';
+        canvas.style.display = 'none';
+        const main = document.querySelector('main.viewer-main');
+        main.style.padding = '0';
+        const embed = document.createElement('embed');
+        embed.src = file + '#toolbar=0&navpanes=0';
+        embed.type = 'application/pdf';
+        embed.style.cssText = 'width:100%; height:calc(100vh - 110px); border:0;';
+        main.appendChild(embed);
+
+        const notice = document.createElement('div');
+        notice.style.cssText = 'background:#fff8e6; color:#4f3b13; padding:10px 18px; border-bottom:1px solid #e0c068; font-size:13px; text-align:center;';
+        notice.innerHTML = '⚠️ 偵測到 <code>file://</code> 本地開啟 — 使用瀏覽器內建 PDF viewer (Layer 1 保護失效)。<br>' +
+                          '部署到 GitHub Pages 後會自動切換為 PDF.js viewer (含 Layer 1)。<br>' +
+                          '本地完整測試:<code>cd embedded-computer-vision-course &amp;&amp; python -m http.server 8000</code> 然後開 <code>http://localhost:8000/</code>';
+        document.body.insertBefore(notice, document.querySelector('.viewer-bar').nextSibling);
+        return;
+      }
+
+      // 正常路徑:PDF.js (HTTPS / localhost)
       pdfjsLib.getDocument(file).promise
         .then(pdf => {
           pdfDoc = pdf;
