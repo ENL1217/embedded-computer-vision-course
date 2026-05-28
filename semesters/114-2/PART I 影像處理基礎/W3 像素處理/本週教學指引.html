@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W3 像素處理 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">Part I 影像處理基礎</a> /
+      W3 像素處理
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+      <a class="btn primary" href="../../作業與評量/W3_像素處理/index.html">開始 W3 作業</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">Week 3 · Part I 影像處理基礎 · 整門課最濃密的一週</p>
+    <h1>W3 操控像素的方法 (Pixel Processing)</h1>
+    <p>W2 學過 pixel 從哪裡來,本週進入「<strong>怎麼操控這個矩陣裡面的每個數字</strong>」。影像格式、單點運算、Gamma、直方圖、卷積濾波,涵蓋整個前處理工具箱。<strong>本週只改 pixel 值,不改 pixel 位置(那是 W4)</strong>。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#schedule">本週要做的事</a>
+      <a href="#files">教材檔案</a>
+      <a href="#sections">8 大主題</a>
+      <a href="#assignment">W3 作業</a>
+      <a href="#checklist">學生檢核</a>
+      <a href="#next">下週預告</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="schedule">
+        <h2>本週要做的事</h2>
+        <p class="muted">總共 153 頁投影片,內容密度最大的一週。挑重點講,動手做為主。</p>
+        <table>
+          <tr><th>順序</th><th>內容</th><th>預估時間</th></tr>
+          <tr><td>1</td><td>§0 開場複習:影像是一個整數矩陣 + 三種影像世界(Binary/Gray/RGB)</td><td>10 min</td></tr>
+          <tr><td>2</td><td>§1 影像與視訊格式 (JPEG/PNG/H.264 壓縮)</td><td>20 min</td></tr>
+          <tr><td>3</td><td>§2 單點運算 (Brightness/Contrast 線性映射)</td><td>20 min</td></tr>
+          <tr><td>4</td><td>§3 Gamma 矯正 + LUT 加速</td><td>30 min</td></tr>
+          <tr><td>5</td><td>§4 直方圖 / equalizeHist / CLAHE / Otsu</td><td>30 min</td></tr>
+          <tr><td>6</td><td>§5 卷積基礎 + Padding + 中值濾波</td><td>30 min</td></tr>
+          <tr><td>7</td><td>§6 高斯 / 雙邊 / 銳化 + 頻域概念</td><td>20 min</td></tr>
+          <tr><td>8</td><td>§7 動手做 Lab1 + Lab2</td><td>20 min</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="files">
+        <h2>教材檔案</h2>
+        <ul class="file-list">
+          <li>
+            <a href="../../shared/pdf-viewer.html?file=../PART%20I%20%E5%BD%B1%E5%83%8F%E8%99%95%E7%90%86%E5%9F%BA%E7%A4%8E/W3%20%E5%83%8F%E7%B4%A0%E8%99%95%E7%90%86/week03_pixel_processing_full.pptx" target="_blank">
+              📂 week03_pixel_processing_full.pptx (原始檔)
+            </a>
+            <span class="tag">核心投影片</span><br>
+            153 張,涵蓋 8 大主題。<span class="muted">※ PPT 待轉 PDF 後可線上檢視</span>
+          </li>
+          <li>
+            <a href="../../作業與評量/W3_像素處理/index.html">W3 作業說明</a>
+            <span class="tag warn">作業</span><br>
+            Lab1:Gamma 矯正夜景影像 ｜ Lab2:直方圖均衡與 CLAHE 比較
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" id="sections">
+        <h2>8 大主題</h2>
+
+        <div class="grid">
+          <div class="card soft">
+            <h3>§0 開場複習</h3>
+            <p>影像 = 整數矩陣 <code>f(x,y) ∈ [0,255]</code>。三種影像世界:Binary (1-bit)、Grayscale (8-bit)、RGB (24-bit)</p>
+          </div>
+          <div class="card soft">
+            <h3>§1 影像與視訊格式</h3>
+            <p>1080p 未壓縮 = 6 MB/張;30 fps 1 分鐘 = 10.8 GB。<br><strong>無損 (PNG/BMP) vs 有損 (JPEG)</strong>;H.264 視訊壓縮基本概念。</p>
+          </div>
+          <div class="card soft">
+            <h3>§2 單點運算</h3>
+            <p>每個 pixel 獨立處理。Brightness 偏移 + Contrast 縮放: <code>g = α·f + β</code></p>
+          </div>
+          <div class="card soft">
+            <h3>§3 Gamma 矯正 + LUT</h3>
+            <p>非線性映射 <code>g = 255·(f/255)^γ</code>。<br><strong>LUT (Look-Up Table)</strong> 一次算 256 值快取,比逐 pixel 算快 10x+。</p>
+          </div>
+          <div class="card soft">
+            <h3>§4 直方圖 / 閾值</h3>
+            <p><code>equalizeHist</code> 全域均衡 / <code>CLAHE</code> 局部均衡 / <code>Otsu</code> 自動二值化</p>
+          </div>
+          <div class="card soft">
+            <h3>§5 卷積基礎</h3>
+            <p>3×3 kernel 滑窗,Padding 處理邊界,Mean / Median filter。</p>
+          </div>
+          <div class="card soft">
+            <h3>§6 高斯/雙邊/銳化</h3>
+            <p>Gaussian (高斯模糊) / Bilateral (保邊去雜) / Unsharp Mask (銳化)。頻域 sidebar:FFT 觀點。</p>
+          </div>
+          <div class="card soft">
+            <h3>§7 總結與 Lab</h3>
+            <p>把 Gamma / 直方圖均衡 / 卷積整合,完成 Lab1 + Lab2 兩個情境題。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="assignment">
+        <h2>W3 作業 ｜ Gamma + 直方圖均衡(兩個 Lab)</h2>
+
+        <div class="card">
+          <h3>Lab 1 ｜ 夜間監視器影像 Gamma 矯正</h3>
+          <p><strong>情境</strong>:你負責維護社區安防系統,某支監視器在夜間拍出的畫面幾乎全黑,只有極微弱的路燈光影。請勿使用單純加法(會讓背景雜訊泛白),必須使用 Gamma Correction 非線性地提亮暗部細節,找出畫面中隱藏的人物輪廓。</p>
+          <ol class="flow">
+            <li>讀入欠曝影像,計算並顯示直方圖,確認直方圖極度左偏</li>
+            <li>實作 Gamma 矯正函式(注意 float32 轉換與 uint8 截斷)</li>
+            <li>試驗 γ = 0.1, 0.3, 0.5, 0.7,比較各 γ 值的視覺效果與直方圖變化</li>
+            <li>建立 LUT 版本 (<code>cv2.LUT</code>),用 <code>time.perf_counter()</code> 測量速度差異</li>
+          </ol>
+        </div>
+
+        <div class="card" style="margin-top:14px;">
+          <h3>Lab 2 ｜ 產線視覺檢測影像品質診斷</h3>
+          <p><strong>情境</strong>:產線視覺檢測機台因廠房環境光源不穩定,導致拍出來的零件圖片時而過曝、時而曝光不足、時而低對比。請設計一套自動影像品質診斷與修復程式。</p>
+          <ol class="flow">
+            <li>讀入病態影像(過曝、欠曝、低對比)</li>
+            <li>計算每張影像的直方圖並繪製,寫出文字診斷結果</li>
+            <li>分別套用 <code>cv2.equalizeHist()</code> 和 CLAHE,比較兩者的效果</li>
+            <li>刻意把 CLAHE 的 <code>clipLimit</code> 設為 40,觀察雜訊放大的後果,再調回 2.0</li>
+          </ol>
+        </div>
+
+        <h3 style="margin-top:14px;">繳交內容</h3>
+        <ul>
+          <li>每個 Lab 的程式碼 (.ipynb 或 .py)</li>
+          <li>關鍵結果截圖(原圖 + 處理後 + 直方圖)</li>
+          <li>簡短文字心得:Gamma vs 線性加法的差別、CLAHE clipLimit 的影響</li>
+        </ul>
+      </section>
+
+      <section class="section" id="checklist">
+        <h2>學生檢核表</h2>
+        <ul class="checklist">
+          <li>我理解 Gamma 矯正為什麼非線性,跟簡單加亮的差別</li>
+          <li>我能用 LUT 加速 pixel-by-pixel 運算</li>
+          <li>我能讀懂直方圖,辨識「過曝/欠曝/低對比」</li>
+          <li>我知道 equalizeHist 和 CLAHE 的差別</li>
+          <li>我能寫一個 3×3 卷積 (Gaussian / Mean)</li>
+          <li>Lab1 和 Lab2 已完成</li>
+        </ul>
+      </section>
+
+      <section class="section" id="next">
+        <h2>下週預告 (W4)</h2>
+        <p>本週只改 pixel 值,下週進入「<strong>改 pixel 位置</strong>」:</p>
+        <ul>
+          <li>座標系統 + 齊次座標</li>
+          <li>2D 幾何變換(旋轉、縮放、仿射、投影)</li>
+          <li>影像插值(Nearest / Bilinear / Bicubic)</li>
+          <li>針孔相機模型 + 相機校準</li>
+        </ul>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="../W2 Camera Pipeline 與 Colab Webcam/本週教學指引.html">← W2</a>
+        <a class="btn primary" href="../W4 影像幾何 (空間處理)/本週教學指引.html">W4 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

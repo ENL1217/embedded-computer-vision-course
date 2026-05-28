@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W4 影像幾何 (空間處理) ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">Part I 影像處理基礎</a> /
+      W4 影像幾何 (空間處理)
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+      <a class="btn primary" href="../../作業與評量/W4_空間處理/index.html">開始 W4 作業</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">Week 4 · Part I 影像處理基礎</p>
+    <h1>W4 影像幾何與座標系統</h1>
+    <p>從 W3 的「pixel 應該是什麼值」轉向「<strong>pixel 應該在哪裡</strong>」。座標系統、齊次座標、2D 變換(旋轉/縮放/仿射/投影)、插值、針孔相機模型、相機校準。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#schedule">本週要做的事</a>
+      <a href="#files">教材檔案</a>
+      <a href="#sections">5 大章節</a>
+      <a href="#assignment">W4 作業</a>
+      <a href="#checklist">學生檢核</a>
+      <a href="#next">下週預告</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="schedule">
+        <h2>本週要做的事</h2>
+        <table>
+          <tr><th>順序</th><th>內容</th><th>預估時間</th></tr>
+          <tr><td>1</td><td>從 W3 像素值處理轉到 W4 像素位置處理(概念轉折)</td><td>10 min</td></tr>
+          <tr><td>2</td><td>01 座標系統:影像座標 vs 世界座標 + 齊次座標</td><td>30 min</td></tr>
+          <tr><td>3</td><td>02 2D 幾何變換:Euclidean → Similarity → Affine → Projective 層級</td><td>40 min</td></tr>
+          <tr><td>4</td><td>03 影像插值:Nearest / Bilinear / Bicubic</td><td>30 min</td></tr>
+          <tr><td>5</td><td>04 針孔相機模型:內參矩陣 K + 畸變係數 D</td><td>30 min</td></tr>
+          <tr><td>6</td><td>05 相機校準:棋盤格法找參數 + 校正畸變</td><td>20 min</td></tr>
+          <tr><td>7</td><td>動手做(Lab1-3)</td><td>20 min</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="files">
+        <h2>教材檔案</h2>
+        <ul class="file-list">
+          <li>
+            <a href="../../shared/pdf-viewer.html?file=../PART%20I%20%E5%BD%B1%E5%83%8F%E8%99%95%E7%90%86%E5%9F%BA%E7%A4%8E/W4%20%E5%BD%B1%E5%83%8F%E5%B9%BE%E4%BD%95%20%28%E7%A9%BA%E9%96%93%E8%99%95%E7%90%86%29/W4_CV_Week4_Final_86slides.pptx" target="_blank">
+              📂 W4_CV_Week4_Final_86slides.pptx (原始檔)
+            </a>
+            <span class="tag">核心投影片</span><br>
+            80 張,5 大章節。參考 Szeliski CV 2nd Ed (2022) + OpenCV 4.x。
+            <span class="muted">※ PPT 待轉 PDF 後可線上檢視</span>
+          </li>
+          <li>
+            <a href="../../作業與評量/W4_空間處理/index.html">W4 作業說明</a>
+            <span class="tag warn">作業</span><br>
+            3 個 Lab:插值比較 + 透視校正 + 相機校準。
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" id="sections">
+        <h2>5 大章節</h2>
+
+        <div class="card">
+          <h3>01 ｜ 座標系統</h3>
+          <ul>
+            <li>影像座標 vs 世界座標</li>
+            <li><strong>齊次座標</strong>:為什麼平移需要齊次? 把 2D 變換變成 3×3 矩陣的乘法</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>02 ｜ 2D 幾何變換</h3>
+          <p>變換層級由低到高:</p>
+          <ul>
+            <li><strong>Euclidean</strong> (旋轉 + 平移):保長度與角度</li>
+            <li><strong>Similarity</strong> (+ 縮放):保角度,長度比例變</li>
+            <li><strong>Affine</strong> (+ 剪切):保平行線</li>
+            <li><strong>Projective / Homography</strong>:只保直線(不保平行)</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>03 ｜ 影像插值 (Interpolation)</h3>
+          <p>變換後 pixel 落在「半整數位置」怎麼辦? 三種插值法:</p>
+          <ul>
+            <li><strong>Nearest Neighbor</strong>:取最近的 pixel,快但鋸齒</li>
+            <li><strong>Bilinear</strong>:4 個鄰居加權平均,中等</li>
+            <li><strong>Bicubic</strong>:16 個鄰居 + 3 次多項式,慢但平滑</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>04 ｜ 針孔相機模型</h3>
+          <ul>
+            <li><strong>內參矩陣 K</strong> (3×3):焦距 f, 主點 cx/cy</li>
+            <li><strong>畸變係數 D</strong>:徑向 (k1, k2, k3) + 切向 (p1, p2)</li>
+            <li>從 3D 世界座標投影到 2D 影像座標的數學</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>05 ｜ 相機校準概念</h3>
+          <ul>
+            <li>用棋盤格從多角度拍 10-15 張</li>
+            <li><code>cv2.findChessboardCorners</code> 抓角點</li>
+            <li><code>cv2.calibrateCamera</code> 求 K 與 D</li>
+            <li><code>cv2.undistort</code> 校正畸變</li>
+            <li><strong>校準時關掉自動對焦</strong>,否則焦距變化會破壞校準</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="assignment">
+        <h2>W4 作業 ｜ 三個 Lab</h2>
+
+        <div class="card">
+          <h3>Lab 1 ｜ 插值法演算法比較</h3>
+          <p><strong>目標</strong>:觀察不同數學插值演算法對影像放大後的品質影響。</p>
+          <ol class="flow">
+            <li>選取一張小像素圖(例如圖標或文字截圖,越小越明顯)</li>
+            <li>分別用 Nearest Neighbor / Bilinear / Bicubic 三種方法放大 4 倍</li>
+            <li>三張結果並列,觀察邊緣鋸齒與模糊感</li>
+          </ol>
+          <p><strong>繳交</strong>:結果圖 + 用 50 字內描述觀察到的差異。</p>
+        </div>
+
+        <div class="card" style="margin-top:14px;">
+          <h3>Lab 2 ｜ 文件透視校正</h3>
+          <p><strong>目標</strong>:利用單應性矩陣 (Homography) 將傾斜拍攝的文件轉為正面俯視圖。</p>
+          <ol class="flow">
+            <li><strong>拍攝</strong>:用手機拍一張放在桌面的學生證(需有明顯傾斜角度)</li>
+            <li><strong>標記</strong>:手動找出文件四個角落的座標 <code>src_pts</code></li>
+            <li><strong>計算</strong>:定義輸出圖長寬,設定四個正面座標 <code>dst_pts</code></li>
+            <li><strong>轉換</strong>:用 <code>findHomography</code> 計算矩陣,透過 <code>warpPerspective</code> 產出矯正影像</li>
+          </ol>
+          <p><strong>繳交</strong>:1. 原始傾斜圖(含標記點) 2. 矯正後的正視圖。</p>
+        </div>
+
+        <div class="card" style="margin-top:14px;">
+          <h3>Lab 3 ｜ 相機校準與影像校正</h3>
+          <p><strong>目標</strong>:掌握相機內參矩陣 K 與畸變係數 D 的物理意義。透過棋盤格校準法,將受鏡頭畸變影響的原始影像校正為符合針孔相機模型的影像。</p>
+          <ol class="flow">
+            <li><strong>資料採集</strong>:自行列印或開啟棋盤格圖檔,從不同角度拍至少 10-15 張</li>
+            <li><strong>參數計算</strong>:識別棋盤格角點,求出 K 與 D</li>
+            <li><strong>即時校正</strong>:將參數套用於即時影像串流,輸出 undistorted 畫面</li>
+            <li><strong>參數擾動實驗</strong>:手動修改焦距 fx、主點、畸變係數,觀察畫面變化</li>
+          </ol>
+          <p><strong>繳交</strong>:</p>
+          <ul>
+            <li>參數文件:K (3×3) 與 D 向量的數值</li>
+            <li>錄製影片:展示原始 vs 校正影像對比,含「手動調整參數」的過程</li>
+            <li>實驗心得:描述影像串流產生的具體物理變異現象</li>
+          </ul>
+          <div class="info" style="margin-top:10px;">
+            <strong>提示</strong>:校準時請確保棋盤格涵蓋畫面邊緣,以獲得更準確的畸變參數。若相機較高級會自動對焦,<strong>請手動關閉</strong>(自動對焦會影響相機的校準參數)。
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="checklist">
+        <h2>學生檢核表</h2>
+        <ul class="checklist">
+          <li>我理解齊次座標為什麼能把平移寫成矩陣乘法</li>
+          <li>我能列出 Euclidean / Similarity / Affine / Projective 各保留什麼性質</li>
+          <li>我能說明三種插值的速度/品質取捨</li>
+          <li>我知道內參矩陣 K 含哪些參數</li>
+          <li>Lab 1-3 都完成</li>
+        </ul>
+      </section>
+
+      <section class="section" id="next">
+        <h2>下週預告 (W5)</h2>
+        <p>影像物理三部曲最後一週 — <strong>色彩處理</strong>:</p>
+        <ul>
+          <li>光、人眼、相機(色彩恆常性、The Dress 爭議)</li>
+          <li>色彩表示(RGB / HSV / Lab / YCrCb)</li>
+          <li>像素色彩運算</li>
+          <li>挑戰與工具(白平衡、Tone Mapping)</li>
+        </ul>
+        <p>W6 開始就進入 Part II,工具棧切換到 Android Studio + Chaquopy。</p>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="../W3 像素處理/本週教學指引.html">← W3</a>
+        <a class="btn primary" href="../W5 色彩處理/本週教學指引.html">W5 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

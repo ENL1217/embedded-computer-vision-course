@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W4 作業 ｜ 空間處理 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">作業與評量</a> /
+      W4 空間處理
+    </div>
+    <div class="actions">
+      <a class="btn" href="../index.html">作業總覽</a>
+      <a class="btn primary" href="../../PART I 影像處理基礎/W4 影像幾何 (空間處理)/本週教學指引.html">回 W4 教學指引</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">W4 作業 · Part I 影像處理基礎 · 三個 Lab</p>
+    <h1>空間處理:插值、透視校正、相機校準</h1>
+    <p>從像素值處理轉到像素位置處理。三個 Lab 涵蓋:插值法品質比較、Homography 透視校正、棋盤格相機校準。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#lab1">Lab 1 ｜ 插值法比較</a>
+      <a href="#lab2">Lab 2 ｜ 透視校正</a>
+      <a href="#lab3">Lab 3 ｜ 相機校準</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="lab1">
+        <h2>Lab 1 ｜ 插值法演算法比較 (Interpolation)</h2>
+
+        <h3>目標</h3>
+        <p>觀察不同數學插值演算法對影像放大後的品質影響。</p>
+
+        <h3>步驟</h3>
+        <ol class="flow">
+          <li>選取一張小像素圖(例如圖標或文字截圖,越小越明顯)</li>
+          <li>分別使用以下三種方法將圖片放大 4 倍(亦可參考 GitHub 上其他方法):
+            <ul>
+              <li><strong>Nearest Neighbor</strong> (最近鄰插值)</li>
+              <li><strong>Bilinear</strong> (雙線性插值)</li>
+              <li><strong>Bicubic</strong> (雙立方插值)</li>
+            </ul>
+          </li>
+          <li>將三張結果圖並列,觀察邊緣鋸齒與模糊感</li>
+        </ol>
+
+        <h3>關鍵程式</h3>
+<pre><code>img_nn   = cv2.resize(img, None, fx=4, fy=4, interpolation=cv2.INTER_NEAREST)
+img_bi   = cv2.resize(img, None, fx=4, fy=4, interpolation=cv2.INTER_LINEAR)
+img_bc   = cv2.resize(img, None, fx=4, fy=4, interpolation=cv2.INTER_CUBIC)</code></pre>
+
+        <h3>繳交</h3>
+        <p>展示結果圖,並用 <strong>50 字內描述</strong>你觀察到的差異。</p>
+      </section>
+
+      <section class="section" id="lab2">
+        <h2>Lab 2 ｜ 文件透視校正 (Perspective Correction)</h2>
+
+        <h3>目標</h3>
+        <p>利用單應性矩陣 (Homography) 將傾斜拍攝的文件轉為正面俯視圖。</p>
+
+        <h3>步驟</h3>
+        <ol class="flow">
+          <li><strong>拍攝</strong>:用手機拍攝一張放在桌面上的學生證(需有明顯傾斜角度)</li>
+          <li><strong>標記</strong>:手動找出文件四個角落在原圖中的座標 <code>src_pts</code></li>
+          <li><strong>計算</strong>:定義輸出圖的長寬,設定對應的四個正面座標 <code>dst_pts</code></li>
+          <li><strong>轉換</strong>:使用 <code>findHomography</code> 計算矩陣,並透過 <code>warpPerspective</code> 產出矯正後的影像</li>
+        </ol>
+
+        <h3>關鍵程式</h3>
+<pre><code>import cv2
+import numpy as np
+
+src_pts = np.array([[x1,y1],[x2,y2],[x3,y3],[x4,y4]], dtype=np.float32)
+dst_pts = np.array([[0,0],[W,0],[W,H],[0,H]], dtype=np.float32)
+
+H, _ = cv2.findHomography(src_pts, dst_pts)
+result = cv2.warpPerspective(img, H, (W, H))</code></pre>
+
+        <h3>繳交</h3>
+        <ol>
+          <li>原始傾斜圖(含標記點)</li>
+          <li>矯正後的正視圖</li>
+        </ol>
+      </section>
+
+      <section class="section" id="lab3">
+        <h2>Lab 3 ｜ 相機校準與影像校正</h2>
+
+        <h3>作業目標</h3>
+        <p>掌握相機內參矩陣(Intrinsic Matrix)<strong>K</strong> 與畸變係數(Distortion Coefficients)<strong>D</strong> 的物理意義。透過棋盤格校準法,學習如何將受鏡頭畸變影響的原始影像,校正為符合針孔相機模型的影像。</p>
+
+        <h3>實驗內容</h3>
+        <ol class="flow">
+          <li><strong>資料採集</strong>:自行列印或開啟棋盤格圖檔,使用相機從不同角度拍攝<strong>至少 10-15 張</strong>照片</li>
+          <li><strong>參數計算</strong>:撰寫程式碼識別棋盤格角點,求出相機內參矩陣 K 與畸變參數 D</li>
+          <li><strong>即時校正</strong>:將參數套用於即時影像串流 (Camera Stream),輸出校正後 (Undistorted) 的畫面</li>
+          <li><strong>參數擾動實驗</strong>:手動修改校準後的參數(如改變焦距 fx、主點座標或畸變係數),觀察影像產生的變異</li>
+        </ol>
+
+        <h3>關鍵程式</h3>
+<pre><code>import cv2
+import numpy as np
+
+# 1. 抓棋盤格角點 (對每張照片做)
+ret, corners = cv2.findChessboardCorners(gray, (9,6), None)
+
+# 2. 校準
+ret, K, D, rvecs, tvecs = cv2.calibrateCamera(
+    objpoints, imgpoints, gray.shape[::-1], None, None)
+
+# 3. 即時校正
+undistorted = cv2.undistort(frame, K, D)</code></pre>
+
+        <h3>繳交</h3>
+        <ul class="checklist">
+          <li><strong>參數文件</strong>:包含內參矩陣 K (3×3) 與畸變向量 D 的數值資料</li>
+          <li><strong>錄製影片</strong>:展示原始與校正影像的對比。可嘗試「手動調整參數」後畫面變化的過程</li>
+          <li><strong>實驗心得</strong>:描述影像串流產生的具體物理變異現象</li>
+        </ul>
+
+        <div class="notice" style="margin-top:14px;">
+          <strong>提示</strong>:
+          <ul>
+            <li>校準時請確保棋盤格涵蓋畫面邊緣,以獲得更準確的畸變參數</li>
+            <li>若相機較高級會自動對焦,<strong>請手動關閉</strong>(因為會影響相機的校準參數)</li>
+          </ul>
+        </div>
+
+        <h3>參考資源</h3>
+        <p>請參考 <a href="https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html" target="_blank">OpenCV 官方教學:Camera Calibration</a> 進行開發。</p>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="#top">回到本頁頂端</a>
+        <a class="btn primary" href="../../PART I 影像處理基礎/W4 影像幾何 (空間處理)/本週教學指引.html">回 W4 教學指引</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

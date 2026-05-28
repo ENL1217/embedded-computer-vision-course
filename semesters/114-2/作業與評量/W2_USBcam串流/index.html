@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W2 作業 ｜ USB Camera 即時串流 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">作業與評量</a> /
+      W2 USB Camera 即時串流
+    </div>
+    <div class="actions">
+      <a class="btn" href="../index.html">作業總覽</a>
+      <a class="btn primary" href="../../PART I 影像處理基礎/W2 Camera Pipeline 與 Colab Webcam/本週教學指引.html">回 W2 教學指引</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">W2 作業 · Part I 影像處理基礎</p>
+    <h1>USB Camera 即時串流</h1>
+    <p>建立 Colab + Local Runtime + 本地 webcam 即時串流環境。整門課所有「即時影像實驗」的基礎建設,本週確認可運作。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#goal">一、作業目標</a>
+      <a href="#content">二、作業內容</a>
+      <a href="#submit">三、繳交內容</a>
+      <a href="#notes">四、注意事項</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="goal">
+        <h2>一、作業目標</h2>
+        <p>建立 <strong>Colab + Local Runtime + 本地 webcam</strong> 即時串流環境,確認可運作。這是後面 W3 影像濾波、W9-W13 RPS 系列等所有即時實驗的基礎。</p>
+      </section>
+
+      <section class="section" id="content">
+        <h2>二、作業內容</h2>
+        <ol class="flow">
+          <li>依 <a href="../../PART I 影像處理基礎/W2 Camera Pipeline 與 Colab Webcam/W2 colab+webcam.html" target="_blank">W2 補充教材</a> 4 步驟建置 Local Runtime
+            <ul>
+              <li>建 Conda 環境 <code>colab_cv</code></li>
+              <li>安裝 opencv-python + jupyter_http_over_ws</li>
+              <li>啟動本地 Jupyter (含 CORS 設定)</li>
+              <li>Colab 「連線至本地執行階段」</li>
+            </ul>
+          </li>
+          <li>用 Colab 連到本機 Jupyter — 右上角圖示變綠色勾勾即代表成功</li>
+          <li>跑底層除錯腳本(補充教材 ❹),列出可用攝影機 index</li>
+          <li>用 <code>cv2.VideoCapture(0, cv2.CAP_DSHOW)</code> 開啟 webcam 查看畫面</li>
+        </ol>
+      </section>
+
+      <section class="section" id="submit">
+        <h2>三、繳交內容</h2>
+        <p>串流成功畫面的<strong>截圖</strong>(畫面要有自己),確認功能正確。</p>
+        <ul class="checklist">
+          <li>截圖中可看到 Colab notebook 介面</li>
+          <li>畫面有自己 (確認 webcam 真的有讀到本地相機)</li>
+          <li>右上角 Colab 連線圖示是「綠色勾勾的小電腦」</li>
+        </ul>
+      </section>
+
+      <section class="section" id="notes">
+        <h2>四、注意事項</h2>
+        <ul>
+          <li>執行前 <strong>關掉所有相機程式</strong> (OBS、Zoom、Teams、Discord)</li>
+          <li>瀏覽器網址列若有相機授權記錄,點 ⓘ 關閉</li>
+          <li><strong>Windows 用戶</strong>強烈建議用 DSHOW backend: <code>cv2.VideoCapture(0, cv2.CAP_DSHOW)</code>,避免預設後端慢</li>
+          <li>numpy 鎖 <code>pip install "numpy&lt;2"</code>,避免相容性問題</li>
+          <li>port 8888 被占就改 8889 或 8890</li>
+          <li>若無法讀到攝影機,跑除錯腳本看 webcam index 是 0、1 還是 2</li>
+          <li>有問題可先問 Colab 內建 Gemini,再問老師</li>
+        </ul>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="#top">回到本頁頂端</a>
+        <a class="btn primary" href="../../PART I 影像處理基礎/W2 Camera Pipeline 與 Colab Webcam/本週教學指引.html">回 W2 教學指引</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

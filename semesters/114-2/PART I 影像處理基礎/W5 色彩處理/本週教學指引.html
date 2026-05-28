@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W5 色彩處理 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">Part I 影像處理基礎</a> /
+      W5 色彩處理
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">Week 5 · Part I 影像處理基礎 · Part I 收尾</p>
+    <h1>W5 色彩影像處理</h1>
+    <p>從 W2 知道色彩怎麼來、W3 處理像素值、W4 處理位置,本週把「色彩」獨立講透:光、人眼、相機如何感知色彩;色彩怎麼表示;像素色彩運算;以及白平衡、Tone Mapping 等實務挑戰。<strong>為 W9 HSV 膚色偵測鋪路。</strong></p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#schedule">本週要做的事</a>
+      <a href="#files">教材檔案</a>
+      <a href="#sections">5 大主題</a>
+      <a href="#colorspace">常用色彩空間</a>
+      <a href="#checklist">學生檢核</a>
+      <a href="#next">下週預告</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="schedule">
+        <h2>本週要做的事</h2>
+        <table>
+          <tr><th>順序</th><th>內容</th><th>預估時間</th></tr>
+          <tr><td>1</td><td>開場提問:同一張白紙在不同燈下為何顏色不一樣? + The Dress 爭議</td><td>20 min</td></tr>
+          <tr><td>2</td><td>① 光、人眼、相機:色彩恆常性、光譜物理、人眼三錐細胞</td><td>40 min</td></tr>
+          <tr><td>3</td><td>② 色彩表示:RGB / HSV / Lab / YCrCb 比較</td><td>40 min</td></tr>
+          <tr><td>4</td><td>③ 像素色彩運算:通道分離、色彩空間轉換</td><td>30 min</td></tr>
+          <tr><td>5</td><td>④ 挑戰與工具:白平衡 (AWB)、Tone Mapping、HDR</td><td>30 min</td></tr>
+          <tr><td>6</td><td>⑤ 應用收尾:色彩直方圖檢索、膚色偵測(為 W9 鋪路)</td><td>20 min</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="files">
+        <h2>教材檔案</h2>
+        <ul class="file-list">
+          <li>
+            <a href="../../shared/pdf-viewer.html?file=../PART%20I%20%E5%BD%B1%E5%83%8F%E8%99%95%E7%90%86%E5%9F%BA%E7%A4%8E/W5%20%E8%89%B2%E5%BD%A9%E8%99%95%E7%90%86/week05_color_image_processing.pptx" target="_blank">
+              📂 week05_color_image_processing.pptx (原始檔)
+            </a>
+            <span class="tag">核心投影片</span><br>
+            93 張,5 段式結構。
+            <span class="muted">※ PPT 待轉 PDF 後可線上檢視</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" id="sections">
+        <h2>5 大主題</h2>
+
+        <div class="card">
+          <h3>① 光、人眼、相機</h3>
+          <ul>
+            <li><strong>色彩恆常性</strong>:大腦自動估計光源色溫並「減去」偏色 → 等效相機的 AWB</li>
+            <li><strong>The Dress</strong>:2015 年那張藍黑/白金裙子 — 揭示色彩是「感知解釋」不只是物理量</li>
+            <li><strong>三錐細胞</strong>:S/M/L 對短/中/長波長敏感</li>
+            <li>相機沒有大腦 → 拍出來會「色偏」 → AWB 演算法重要</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>② 色彩表示</h3>
+          <p>四個常用色彩空間,各自適合不同情境:</p>
+          <ul>
+            <li><strong>RGB</strong>:相機/螢幕原生,但難分離「亮度」與「顏色」</li>
+            <li><strong>HSV</strong>:Hue 色相 + Saturation 飽和度 + Value 明度,適合「按顏色挑」(W9 膚色偵測就靠這個)</li>
+            <li><strong>Lab</strong>:接近人眼感知,L 是亮度,a/b 是色彩,適合「色差量測」</li>
+            <li><strong>YCrCb</strong>:Y 亮度 + Cr/Cb 色度,影片壓縮用 (JPEG/H.264)</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>③ 像素色彩運算</h3>
+          <ul>
+            <li>通道分離 (<code>cv2.split</code>) 與合併 (<code>cv2.merge</code>)</li>
+            <li>色彩空間轉換 (<code>cv2.cvtColor(img, cv2.COLOR_BGR2HSV)</code>)</li>
+            <li>顏色閾值 (<code>cv2.inRange</code>) — 找特定顏色的物件</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>④ 挑戰與工具</h3>
+          <ul>
+            <li><strong>白平衡 (AWB)</strong>:Gray World / White Patch / Retinex 等算法</li>
+            <li><strong>Tone Mapping</strong>:把 HDR 高動態範圍壓縮到 8-bit 顯示</li>
+            <li><strong>色彩相關的 CV 挑戰</strong>:跨光源、跨相機、跨膚色 — W2 講過的 ISP 差異會再現</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>⑤ 應用收尾</h3>
+          <ul>
+            <li><strong>色彩直方圖檢索</strong> (Swain & Ballard, 1991)</li>
+            <li><strong>膚色偵測</strong> → <strong>W9 HSV 膚色 RPS</strong> 直接會用</li>
+            <li>顏色追蹤、色彩遷移、Image segmentation 入門</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="colorspace">
+        <h2>常用色彩空間速查</h2>
+        <table>
+          <tr><th>空間</th><th>通道</th><th>適用情境</th><th>cv2 轉換 code</th></tr>
+          <tr><td>RGB / BGR</td><td>R/G/B</td><td>相機 raw、顯示</td><td>(預設,讀進來就是 BGR)</td></tr>
+          <tr><td>Grayscale</td><td>1 通道</td><td>大多 CV 算法</td><td><code>COLOR_BGR2GRAY</code></td></tr>
+          <tr><td>HSV</td><td>Hue/Sat/Val</td><td>按顏色挑物件、膚色偵測</td><td><code>COLOR_BGR2HSV</code></td></tr>
+          <tr><td>Lab</td><td>L/a/b</td><td>色差量測、CLAHE 在 L 通道</td><td><code>COLOR_BGR2LAB</code></td></tr>
+          <tr><td>YCrCb</td><td>Y/Cr/Cb</td><td>JPEG 壓縮、跨膚色穩定</td><td><code>COLOR_BGR2YCrCb</code></td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="checklist">
+        <h2>學生檢核表</h2>
+        <ul class="checklist">
+          <li>我能解釋「為什麼相機照出的白紙會偏色」</li>
+          <li>我理解人眼三錐細胞與 RGB 三通道的關係</li>
+          <li>我能用 HSV inRange 抓出特定顏色物件</li>
+          <li>我知道 RGB / HSV / Lab 各自的適用情境</li>
+          <li>我能解釋 AWB 在做什麼</li>
+        </ul>
+      </section>
+
+      <section class="section" id="next">
+        <h2>下週預告 (W6) ⭐ Part II 起點</h2>
+        <p>W1-W5 純 Colab 階段結束。下週<strong>工具棧切換到 Android Studio + Chaquopy</strong>:</p>
+        <ul>
+          <li>Android Studio 安裝與基本開發環境</li>
+          <li>Chaquopy 套件:讓 Android App 內嵌 Python 程式碼</li>
+          <li>在 Android 上跑 Python OpenCV (第 8 章作業)</li>
+          <li>Git 版本管理基礎</li>
+        </ul>
+        <div class="info" style="margin-top:10px;">
+          <strong>準備</strong>:W6 上課前請先看 Chaquopy 講義 Ch.1-Ch.7(基礎環境)。W6 課堂節奏較快,先看完一遍課堂跟得上。
+        </div>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="../W4 影像幾何 (空間處理)/本週教學指引.html">← W4</a>
+        <a class="btn primary" href="../../PART II Android電腦視覺開發/W6 Android Chaquopy 環境/本週教學指引.html">W6 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

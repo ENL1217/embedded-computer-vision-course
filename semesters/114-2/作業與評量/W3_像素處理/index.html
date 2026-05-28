@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W3 作業 ｜ 像素處理 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">作業與評量</a> /
+      W3 像素處理
+    </div>
+    <div class="actions">
+      <a class="btn" href="../index.html">作業總覽</a>
+      <a class="btn primary" href="../../PART I 影像處理基礎/W3 像素處理/本週教學指引.html">回 W3 教學指引</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">W3 作業 · Part I 影像處理基礎 · 兩個 Lab</p>
+    <h1>像素處理:Gamma 矯正 + 直方圖均衡</h1>
+    <p>用兩個產業情境練習 W3 的單點運算與直方圖工具:夜間監視器影像提亮、產線視覺檢測影像品質診斷。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#lab1">Lab 1 ｜ Gamma 矯正</a>
+      <a href="#lab2">Lab 2 ｜ 直方圖均衡</a>
+      <a href="#submit">繳交內容</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="lab1">
+        <h2>Lab 1 ｜ 夜間監視器影像 Gamma 矯正</h2>
+
+        <h3>情境</h3>
+        <div class="info">
+          你負責維護社區安防系統,某支監視器在<strong>夜間拍出的畫面幾乎全黑</strong>,只有極微弱的路燈光影。請勿使用單純加法(會讓背景雜訊泛白),必須使用 Gamma Correction <strong>非線性</strong>地提亮暗部細節,找出畫面中隱藏的人物輪廓。
+        </div>
+
+        <h3>步驟</h3>
+        <ol class="flow">
+          <li>讀入欠曝影像,計算並顯示直方圖,確認直方圖極度左偏</li>
+          <li>實作 Gamma 矯正函式(注意 float32 轉換與 uint8 截斷)</li>
+          <li>試驗 γ = 0.1, 0.3, 0.5, 0.7,比較各 γ 值的視覺效果與直方圖變化</li>
+          <li>建立 LUT 版本 (<code>cv2.LUT</code>),用 <code>time.perf_counter()</code> 測量速度差異</li>
+        </ol>
+
+        <h3>核心公式</h3>
+<pre><code>output = 255 * (input / 255) ** gamma
+# gamma &lt; 1 → 提亮暗部
+# gamma = 1 → 不變
+# gamma &gt; 1 → 壓暗</code></pre>
+      </section>
+
+      <section class="section" id="lab2">
+        <h2>Lab 2 ｜ 產線視覺檢測影像品質診斷</h2>
+
+        <h3>情境</h3>
+        <div class="info">
+          產線視覺檢測機台因廠房環境光源不穩定,導致拍出來的零件圖片<strong>時而過曝、時而曝光不足、時而低對比</strong>。請設計一套自動影像品質診斷與修復程式。
+        </div>
+
+        <h3>步驟</h3>
+        <ol class="flow">
+          <li>讀入病態影像(過曝、欠曝、低對比)</li>
+          <li>計算每張影像的直方圖並繪製,寫出文字診斷結果</li>
+          <li>分別套用 <code>cv2.equalizeHist()</code> 和 <strong>CLAHE</strong>,比較兩者的效果</li>
+          <li>刻意把 CLAHE 的 <code>clipLimit</code> 設為 40,觀察雜訊放大的後果,再調回 2.0</li>
+        </ol>
+
+        <h3>關鍵函式</h3>
+<pre><code>import cv2
+import numpy as np
+
+# 全域直方圖均衡
+img_eq = cv2.equalizeHist(gray)
+
+# 局部直方圖均衡 (CLAHE)
+clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+img_clahe = clahe.apply(gray)</code></pre>
+      </section>
+
+      <section class="section" id="submit">
+        <h2>繳交內容</h2>
+        <ul class="checklist">
+          <li>兩個 Lab 的<strong>程式碼</strong> (.ipynb 或 .py)</li>
+          <li>關鍵<strong>結果截圖</strong>:原圖 + 處理後 + 直方圖</li>
+          <li><strong>簡短文字心得</strong>:
+            <ul>
+              <li>Gamma vs 線性加法的差別</li>
+              <li>LUT 速度比逐 pixel 快多少倍</li>
+              <li>equalizeHist 跟 CLAHE 的差別</li>
+              <li>CLAHE clipLimit 設太高的後果</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="#top">回到本頁頂端</a>
+        <a class="btn primary" href="../../PART I 影像處理基礎/W3 像素處理/本週教學指引.html">回 W3 教學指引</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

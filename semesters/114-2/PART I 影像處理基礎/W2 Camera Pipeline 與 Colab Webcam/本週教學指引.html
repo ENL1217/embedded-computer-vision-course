@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W2 Camera Pipeline 與 Colab Webcam ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">Part I 影像處理基礎</a> /
+      W2 Camera Pipeline 與 Colab Webcam
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+      <a class="btn primary" href="../../作業與評量/W2_USBcam串流/index.html">開始 W2 作業</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">Week 2 · Part I 影像處理基礎</p>
+    <h1>W2 Camera Pipeline 與 Colab Webcam</h1>
+    <p>「同一個模型,為什麼換一顆 camera、換一個場景,結果就變差?」很多人以為 CV 問題都在模型,但真正第一個 bug 常常在 camera。本週帶你走完「光 → lens → sensor → raw → ISP → image」的全管線,並架起 Colab + 本地 Webcam 即時串流(後面所有即時實驗的基礎)。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#schedule">本週要做的事</a>
+      <a href="#files">教材檔案</a>
+      <a href="#chapters">六大章節</a>
+      <a href="#webcam">Colab + Webcam 架構</a>
+      <a href="#assignment">W2 作業</a>
+      <a href="#checklist">學生檢核</a>
+      <a href="#next">下週預告</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="schedule">
+        <h2>本週要做的事</h2>
+        <table>
+          <tr><th>順序</th><th>內容</th><th>預估時間</th></tr>
+          <tr><td>1</td><td>為什麼先懂 Camera (Ch.1)</td><td>15 min</td></tr>
+          <tr><td>2</td><td>光學成像與曝光 — 光圈/快門/ISO trade-off (Ch.2)</td><td>40 min</td></tr>
+          <tr><td>3</td><td>Sensor 把光變成資料 — Pixel/SNR/Rolling Shutter (Ch.3)</td><td>30 min</td></tr>
+          <tr><td>4</td><td>ISP Pipeline — Bayer/Demosaic/sRGB (Ch.4)</td><td>30 min</td></tr>
+          <tr><td>5</td><td>Camera 介面 — MIPI/USB/UVC (Ch.5)</td><td>15 min</td></tr>
+          <tr><td>6</td><td><strong>動手</strong>:Colab 連本地 webcam 串流</td><td>40 min</td></tr>
+          <tr><td>7</td><td>銜接第三週 Pixel Processing (Ch.6)</td><td>10 min</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="files">
+        <h2>教材檔案</h2>
+        <ul class="file-list">
+          <li>
+            <a href="../../shared/pdf-viewer.html?file=../PART%20I%20%E5%BD%B1%E5%83%8F%E8%99%95%E7%90%86%E5%9F%BA%E7%A4%8E/W2%20Camera%20Pipeline%20%E8%88%87%20Colab%20Webcam/CV_Week2_Camera_Pipeline.pptx" target="_blank">
+              📂 CV_Week2_Camera_Pipeline.pptx (原始檔)
+            </a>
+            <span class="tag">核心投影片</span><br>
+            50 張,分 6 章節。<span class="muted">※ PPT 待轉 PDF 後可線上檢視</span>
+          </li>
+          <li>
+            <a href="W2 colab+webcam.html" target="_blank">
+              📖 Colab + Webcam 影像串流架構指南
+            </a>
+            <span class="tag">補充教材</span><br>
+            雲端架構 vs Local Runtime 比較、4 步驟建置流程、底層除錯腳本。
+          </li>
+          <li>
+            <a href="../../作業與評量/W2_USBcam串流/index.html">W2 作業說明</a>
+            <span class="tag warn">作業</span><br>
+            USB Camera + Colab Local Runtime 即時串流。
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" id="chapters">
+        <h2>六大章節重點</h2>
+
+        <div class="card">
+          <h3>Ch.1 ｜ 為什麼 CV 課程一開始要先懂 Camera</h3>
+          <ul>
+            <li>電腦視覺 ≠ 直接理解世界,理解的是相機輸出的資料</li>
+            <li><strong>Garbage In, Garbage Out</strong>:過曝、模糊、低照、rolling shutter 都影響後續辨識</li>
+            <li>本週主線:<code>光 → lens → sensor → raw → image/video</code></li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Ch.2 ｜ 光學成像與曝光</h3>
+          <ul>
+            <li><strong>顏色 ≠ 物體屬性</strong>:光與材料交互作用後的結果(紅蘋果在紅光、白光、藍光下不同)</li>
+            <li><strong>Pinhole / Aperture / Lens</strong>:成像第一個 trade-off — 清楚 vs 亮度</li>
+            <li><strong>三角曝光</strong>:Exposure Time × Aperture × Gain。短曝光不足、長曝光糊、高 gain 噪聲</li>
+            <li><strong>Motion Blur</strong>:曝光時間 × 移動速度</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Ch.3 ｜ Sensor 把光變成資料</h3>
+          <ul>
+            <li><strong>Fill Factor</strong>:不是全部 pixel 面積在感光,還有讀取電路</li>
+            <li><strong>SNR</strong>:光越多 SNR 越好,大 sensor 低光表現好</li>
+            <li><strong>Rolling vs Global Shutter</strong>:高速物體歪斜的原因</li>
+            <li><strong>取樣 (Sampling)</strong>:相機輸出是離散 sample,不是連續場景</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Ch.4 ｜ Color / Raw / ISP Pipeline</h3>
+          <ul>
+            <li><strong>Bayer Filter</strong>:50% G + 25% R + 25% B,單一 pixel 只有 1 色</li>
+            <li><strong>Demosaic</strong>:用鄰近 pixel 估算缺失通道 — 你看到的彩色影像是重建出來的</li>
+            <li><strong>Camera Response</strong>:radiance → pixel value 不是線性,sRGB 含 gamma 校正</li>
+            <li><strong>ISP Pipeline</strong>:Raw → Demosaic → White Balance → Color Correct → Tone/Gamma → Output</li>
+            <li>同 sensor + 不同 ISP → 顏色與細節表現不同 (這是各家手機相機差異來源)</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Ch.5 ｜ Camera 介面與平台對應</h3>
+          <ul>
+            <li><strong>手機模組</strong>:MIPI CSI-2</li>
+            <li><strong>USB Webcam</strong>:USB / UVC ← 本週我們用這個</li>
+            <li><strong>MCU 開發板</strong>:Parallel / CSI</li>
+            <li><strong>工業相機</strong>:LVDS / Camera Link</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Ch.6 ｜ 銜接第三週</h3>
+          <p>從光到資料,六個關鍵步驟。<strong>下週 W3 接著處理「拿到 raw/image 之後怎麼對像素值動手」</strong> — Brightness、Contrast、Gamma、直方圖、卷積濾波。</p>
+        </div>
+      </section>
+
+      <section class="section" id="webcam">
+        <h2>Colab + Webcam 即時串流架構</h2>
+        <p>本週的<strong>核心動手部分</strong>。詳細步驟在 <a href="W2 colab+webcam.html" target="_blank">補充教材</a>。重點預告:</p>
+        <ul>
+          <li><strong>雲端架構</strong>:Webcam → Base64 → Google 雲端 → Python → Base64 回傳 → 顯示。延遲高,高解析常 crash</li>
+          <li><strong>Local Runtime 架構</strong>:Colab 只送程式碼,影像流完全本地處理。零延遲,完整控制硬體</li>
+          <li>4 步驟建置:Conda 環境 → 套件安裝 → CORS 啟動 → Colab 連線</li>
+          <li>關鍵地雷:<strong>必須關閉瀏覽器網址列相機授權</strong>,否則資源衝突</li>
+        </ul>
+      </section>
+
+      <section class="section" id="assignment">
+        <h2>W2 作業 ｜ USB Camera 即時串流</h2>
+
+        <h3>一、作業目標</h3>
+        <p>建立 Colab + Local Runtime + 本地 webcam 即時串流環境,確認後續所有「即時影像實驗」的基礎建設可運作。</p>
+
+        <h3>二、作業內容</h3>
+        <ol class="flow">
+          <li>依 <a href="W2 colab+webcam.html" target="_blank">補充教材</a> 4 步驟建置 Local Runtime</li>
+          <li>用 Colab 連到本機 Jupyter (右上角圖示變綠色勾勾)</li>
+          <li>跑底層除錯腳本,列出可用攝影機 index</li>
+          <li>用 <code>cv2.VideoCapture</code> 開啟 webcam 看畫面</li>
+        </ol>
+
+        <h3>三、繳交內容</h3>
+        <p>串流成功畫面的<strong>截圖</strong>(畫面要有自己),確認功能正確。</p>
+
+        <h3>四、注意事項</h3>
+        <ul>
+          <li>關掉所有相機程式(OBS、Zoom、Teams)</li>
+          <li>瀏覽器網址列若有相機授權記錄,點 ⓘ 關閉</li>
+          <li>Windows 用 DSHOW backend: <code>cv2.VideoCapture(0, cv2.CAP_DSHOW)</code></li>
+          <li>numpy 鎖 <code>numpy&lt;2</code>,避免相容性問題</li>
+          <li>port 8888 被占用換 8889</li>
+        </ul>
+      </section>
+
+      <section class="section" id="checklist">
+        <h2>學生檢核表</h2>
+        <ul class="checklist">
+          <li>我理解 ISP Pipeline 的 5 個處理步驟</li>
+          <li>我能說明 Bayer Filter 與 Demosaic 的關係</li>
+          <li>我能說出「曝光三角」三個參數的取捨</li>
+          <li>Local Runtime 建置完成,Colab 連得到本機 Jupyter</li>
+          <li>能用 webcam 即時看到畫面</li>
+          <li>串流截圖已準備好(畫面有自己)</li>
+        </ul>
+      </section>
+
+      <section class="section" id="next">
+        <h2>下週預告 (W3)</h2>
+        <p>本週理解了「pixel 從哪裡來」,下週進入「<strong>怎麼操控 pixel 的值</strong>」:</p>
+        <ul>
+          <li>影像格式 (JPEG/PNG/H.264 壓縮原理)</li>
+          <li>單點運算 (Brightness/Contrast)</li>
+          <li>Gamma 矯正 + LUT 加速</li>
+          <li>直方圖 / CLAHE / Otsu 閾值化</li>
+          <li>卷積濾波 (高斯/雙邊/銳化)</li>
+        </ul>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="../W1 課程介紹與環境建置/本週教學指引.html">← W1</a>
+        <a class="btn primary" href="../W3 像素處理/本週教學指引.html">W3 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>
