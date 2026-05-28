@@ -19,8 +19,8 @@
  * ========================================================== */
 
 (function () {
-  // === 設定 (請改成你的 GA4 Measurement ID) ===
-  const GA_ID = 'G-XXXXXXXXXX';
+  // === 設定 (GA4 Measurement ID) ===
+  const GA_ID = 'G-PXDNKPJ53Q';
 
   // 偵測是否還是預設值
   if (GA_ID === 'G-XXXXXXXXXX') {
