@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W9 作業 ｜ 古典 CV 規則法 RPS ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">作業與評量</a> /
+      W9 古典 RPS
+    </div>
+    <div class="actions">
+      <a class="btn" href="../index.html">作業總覽</a>
+      <a class="btn primary" href="../../PART III AI電腦視覺技術/W9 傳統 CV 規則法 RPS/本週教學指引.html">回 W9 教學指引</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">W9 作業 · Part III · 五範式 RPS 第一棒</p>
+    <h1>古典 CV 規則法 RPS</h1>
+    <p>用 W6/W7 學過的古典工具做猜拳辨識。<strong>先在 Colab 把演算法驗證好,再搬到 Android CameraX</strong>。本週體驗「規則法的天花板」,下週 W10 看 ML/DL 怎麼把它打破。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#goal">一、作業目標</a>
+      <a href="#content">二、作業內容</a>
+      <a href="#bonus">三、加分項</a>
+      <a href="#submit">四、繳交內容</a>
+      <a href="#notes">五、注意事項</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="goal">
+        <h2>一、作業目標</h2>
+        <p>讓你親手實作「規則法 RPS」,<strong>體驗古典 CV 在語意辨識任務上的天花板</strong>。完成後下週 W10 換 ML/DL 時,你會看到正確率從 70% 跳到 90%+,並理解這個跳躍的代價(模型大小、推論成本)來自哪裡。</p>
+      </section>
+
+      <section class="section" id="content">
+        <h2>二、作業內容</h2>
+
+        <div class="card soft">
+          <h3>Step 1 ｜ Colab 驗算法</h3>
+          <ol>
+            <li>在 Colab 開新 notebook</li>
+            <li>寫出 <code>rps_classical.py</code> 的核心函式:<code>detect_hand_mask</code> / <code>find_largest_contour</code> / <code>count_fingers</code> / <code>classify_rps</code></li>
+            <li>用三張靜態圖(自拍石頭、剪刀、布)跑通分類</li>
+            <li>確認三種手勢分類正確才往下一步</li>
+          </ol>
+        </div>
+
+        <div class="card soft" style="margin-top:10px;">
+          <h3>Step 2 ｜ 搬到 Android</h3>
+          <ol>
+            <li>把 <code>rps_classical.py</code> 放進 Android 專案 <code>app/src/main/python/</code></li>
+            <li>加上 <code>process_frame(nv21_bytes, w, h)</code> 作為 Chaquopy 入口</li>
+            <li>在 Python 端處理 NV21 → BGR 的格式轉換(PPT Slide 31)</li>
+            <li><strong>這步驟不用重新驗算法,只確認資料進出格式正確</strong></li>
+          </ol>
+        </div>
+
+        <div class="card soft" style="margin-top:10px;">
+          <h3>Step 3 ｜ 整合 CameraX</h3>
+          <ol>
+            <li>用 CameraX <code>ImageAnalysis</code> 即時抓取相機畫面(Chaquopy 講義 Ch.13)</li>
+            <li>Java 端 <code>imageProxyToNv21()</code> 取得 byte[],用 <code>callAttr</code> 傳給 Python</li>
+            <li>接收 Python 回傳的 <code>(label, n_gaps, jpeg)</code></li>
+            <li>UI 上即時顯示判斷結果(rock / scissors / paper)</li>
+          </ol>
+        </div>
+
+        <div class="card soft" style="margin-top:10px;">
+          <h3>Step 4 ｜ 驗證效果</h3>
+          <ul>
+            <li>在固定背景下,三種手勢的正確率達 <strong>60% 以上</strong></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="bonus">
+        <h2>三、加分項(任選)</h2>
+        <ul>
+          <li><strong>(+1)</strong> 整合 ORB 樣板比對作為「第二意見」,兩種方法投票(用 <code>shared/assets/images/rock.jpg</code> 等做樣板)</li>
+          <li><strong>(+2)</strong> 加入「畫面凍結 0.5 秒後才更新結果」減少抖動</li>
+          <li><strong>(+3)</strong> 整合 W6 學過的 contour 屬性(面積、緊密度)作為輔助特徵</li>
+          <li><strong>(+4)</strong> UI 上顯示 debug 視覺化(輪廓綠線、凸包紅線、指縫藍點)</li>
+        </ul>
+      </section>
+
+      <section class="section" id="submit">
+        <h2>四、繳交內容</h2>
+        <ul class="checklist">
+          <li><strong>30 秒測試影片</strong>:自拍三種手勢,標記正確率</li>
+          <li><strong><code>.doc</code> 簡易報告</strong>:說明做了什麼、遇到什麼問題</li>
+        </ul>
+      </section>
+
+      <section class="section" id="notes">
+        <h2>五、注意事項</h2>
+        <ul>
+          <li>HSV 膚色範圍不同人差很多,<strong>先用自己手調</strong>,再測同學的會更準</li>
+          <li>Step 2 搬到 Android 時若分類錯誤,先檢查<strong>格式轉換</strong>(NV21 → BGR)而非演算法</li>
+          <li><code>cv2.convexHull</code> 的 <code>returnPoints</code> 參數務必依用途設對(PPT Slide 23)</li>
+          <li>Chaquopy 安裝 <code>opencv-python</code> 第一次 build 可能 5-10 分鐘</li>
+          <li>若有問題可先問 Colab Gemini,再問老師</li>
+        </ul>
+        <div class="info" style="margin-top:14px;">
+          <strong>除錯小提示</strong>:<br>
+          常見錯誤排除表在 <a href="../../PART III AI電腦視覺技術/W9 傳統 CV 規則法 RPS/本週教學指引.html#debug">W9 教學指引 → 常見錯誤排除</a>。
+        </div>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="#top">回到本頁頂端</a>
+        <a class="btn primary" href="../../PART III AI電腦視覺技術/W9 傳統 CV 規則法 RPS/本週教學指引.html">回 W9 教學指引</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

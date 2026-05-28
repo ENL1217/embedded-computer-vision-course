@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>教材檢視 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="css/course.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <style>
+    body { background: #1a2435; margin: 0; padding: 0; }
+    .viewer-bar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: #132033;
+      color: #fff;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #2c3e50;
+    }
+    .viewer-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: #d9e5ef;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 50vw;
+    }
+    .viewer-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .vbtn {
+      background: #1f2f47;
+      color: #d9e5ef;
+      border: 1px solid #2c4263;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 32px;
+    }
+    .vbtn:hover { background: #2c4263; }
+    .vbtn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .page-indicator {
+      color: #b7d7d7;
+      font-size: 14px;
+      padding: 0 8px;
+    }
+    .page-indicator input {
+      width: 50px;
+      padding: 4px 6px;
+      border: 1px solid #2c4263;
+      background: #1f2f47;
+      color: #fff;
+      border-radius: 4px;
+      text-align: center;
+      font-size: 14px;
+    }
+    main.viewer-main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      min-height: calc(100vh - 120px);
+    }
+    canvas#pdf-canvas {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      background: #fff;
+      max-width: 100%;
+      height: auto;
+    }
+    .loading {
+      color: #b7d7d7;
+      padding: 40px;
+      text-align: center;
+    }
+    .error {
+      color: #ff8a80;
+      padding: 40px;
+      text-align: center;
+      max-width: 600px;
+    }
+    footer.viewer-footer {
+      background: #132033;
+      color: #b7d7d7;
+      padding: 12px 20px;
+      text-align: center;
+      font-size: 13px;
+      border-top: 1px solid #2c3e50;
+    }
+    @media (max-width: 720px) {
+      .viewer-title { max-width: 100%; flex-basis: 100%; }
+      .viewer-controls { flex-basis: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="viewer-bar">
+    <div class="viewer-title" id="filename">載入中...</div>
+    <div class="viewer-controls">
+      <button class="vbtn" id="prev" title="上一頁 (←)">← 上一頁</button>
+      <span class="page-indicator">
+        <input type="number" id="page-input" min="1" value="1"> / <span id="page-count">-</span>
+      </span>
+      <button class="vbtn" id="next" title="下一頁 (→)">下一頁 →</button>
+      <button class="vbtn" id="zoom-out" title="縮小">−</button>
+      <button class="vbtn" id="zoom-in" title="放大">+</button>
+      <button class="vbtn" id="fit-width" title="符合寬度">⇔ 符合寬度</button>
+    </div>
+  </div>
+
+  <main class="viewer-main">
+    <div id="content" class="loading">⏳ 載入 PDF 中...</div>
+    <canvas id="pdf-canvas" style="display:none;"></canvas>
+  </main>
+
+  <footer class="viewer-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 本教材限本課程修課學生使用 ｜ 禁止外流
+  </footer>
+
+  <script>
+    // 設定 PDF.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    const params = new URLSearchParams(location.search);
+    const file = params.get('file');
+    const canvas = document.getElementById('pdf-canvas');
+    const ctx = canvas.getContext('2d');
+    const content = document.getElementById('content');
+
+    let pdfDoc = null;
+    let pageNum = 1;
+    let scale = 1.5;
+    let isRendering = false;
+    let pendingPage = null;
+
+    if (!file) {
+      content.className = 'error';
+      content.textContent = '⚠️ 沒有指定檔案 (網址缺少 ?file=... 參數)';
+    } else {
+      const filename = decodeURIComponent(file.split('/').pop());
+      document.getElementById('filename').textContent = filename;
+      document.title = filename + ' ｜ 教材檢視';
+
+      pdfjsLib.getDocument(file).promise
+        .then(pdf => {
+          pdfDoc = pdf;
+          document.getElementById('page-count').textContent = pdf.numPages;
+          document.getElementById('page-input').max = pdf.numPages;
+          content.style.display = 'none';
+          canvas.style.display = 'block';
+          // 起手用「符合寬度」
+          fitWidth();
+        })
+        .catch(err => {
+          content.className = 'error';
+          content.innerHTML = '❌ 無法載入 PDF<br><br><code>' + err.message + '</code>';
+        });
+    }
+
+    function renderPage(num) {
+      if (isRendering) {
+        pendingPage = num;
+        return;
+      }
+      isRendering = true;
+      pdfDoc.getPage(num).then(page => {
+        const viewport = page.getViewport({ scale });
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const renderCtx = { canvasContext: ctx, viewport };
+        page.render(renderCtx).promise.then(() => {
+          isRendering = false;
+          document.getElementById('page-input').value = num;
+          if (pendingPage !== null) {
+            const p = pendingPage;
+            pendingPage = null;
+            renderPage(p);
+          }
+        });
+      });
+    }
+
+    function goPrev() {
+      if (pageNum > 1) { pageNum--; renderPage(pageNum); }
+    }
+    function goNext() {
+      if (pageNum < pdfDoc.numPages) { pageNum++; renderPage(pageNum); }
+    }
+    function zoomIn() {
+      scale *= 1.2;
+      renderPage(pageNum);
+    }
+    function zoomOut() {
+      scale /= 1.2;
+      renderPage(pageNum);
+    }
+    function fitWidth() {
+      if (!pdfDoc) return;
+      pdfDoc.getPage(pageNum).then(page => {
+        const viewport = page.getViewport({ scale: 1 });
+        const main = document.querySelector('main.viewer-main');
+        scale = (main.clientWidth - 40) / viewport.width;
+        renderPage(pageNum);
+      });
+    }
+
+    document.getElementById('prev').addEventListener('click', goPrev);
+    document.getElementById('next').addEventListener('click', goNext);
+    document.getElementById('zoom-in').addEventListener('click', zoomIn);
+    document.getElementById('zoom-out').addEventListener('click', zoomOut);
+    document.getElementById('fit-width').addEventListener('click', fitWidth);
+
+    document.getElementById('page-input').addEventListener('change', e => {
+      const n = parseInt(e.target.value);
+      if (n >= 1 && n <= pdfDoc.numPages) {
+        pageNum = n;
+        renderPage(pageNum);
+      }
+    });
+
+    document.addEventListener('keydown', e => {
+      if (!pdfDoc) return;
+      // 不在 input 內才響應
+      if (document.activeElement.tagName === 'INPUT') return;
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); goPrev(); }
+      else if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); goNext(); }
+      else if (e.key === '+' || e.key === '=') { e.preventDefault(); zoomIn(); }
+      else if (e.key === '-') { e.preventDefault(); zoomOut(); }
+    });
+
+    // 禁右鍵 (Layer 1)
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    // 禁拖拉
+    canvas.addEventListener('dragstart', e => e.preventDefault());
+  </script>
+
+</body>
+</html>

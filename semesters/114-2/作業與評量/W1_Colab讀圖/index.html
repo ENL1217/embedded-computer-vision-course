@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W1 作業 ｜ Colab + OpenCV 讀圖 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">作業與評量</a> /
+      W1 Colab 讀圖
+    </div>
+    <div class="actions">
+      <a class="btn" href="../index.html">作業總覽</a>
+      <a class="btn primary" href="../../PART I 影像處理基礎/W1 課程介紹與環境建置/本週教學指引.html">回 W1 教學指引</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">W1 作業 · Part I 影像處理基礎 · 本週唯一作業</p>
+    <h1>Colab + OpenCV 讀圖</h1>
+    <p>整門課所有 Colab 端的實作都從這裡開始。熟悉 Google Colab 環境,透過 OpenCV (cv2) 讀取、顯示、儲存影像,並學會將 Google Drive 與 Colab 連結。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#goal">一、作業目標</a>
+      <a href="#content">二、作業內容</a>
+      <a href="#code">三、參考程式碼</a>
+      <a href="#submit">四、繳交內容</a>
+      <a href="#notes">五、注意事項</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="goal">
+        <h2>一、作業目標</h2>
+        <p>熟悉 Google Colab 環境,透過 OpenCV (cv2) 讀取、顯示、儲存影像,並學會將 Google Drive 與 Colab 連結。<strong>整門課所有 Colab 端的實作都從這裡開始</strong>。</p>
+      </section>
+
+      <section class="section" id="content">
+        <h2>二、作業內容</h2>
+        <ol class="flow">
+          <li>使用 Google Colab 建立新的 Python Notebook</li>
+          <li>將 Google Drive 掛載至 Colab</li>
+          <li>切換到自訂資料夾(例如 <code>/content/drive/My Drive/Colab Notebooks/Image Process</code>)</li>
+          <li>確認資料夾內容</li>
+          <li>讀取自訂影像檔(例如 <code>Lenna.bmp</code>)</li>
+          <li>檢查檔案是否存在</li>
+          <li>以灰階模式讀取影像</li>
+          <li>顯示影像尺寸</li>
+          <li>顯示影像</li>
+          <li>將影像儲存為 <code>resize.jpg</code></li>
+        </ol>
+      </section>
+
+      <section class="section" id="code">
+        <h2>三、參考程式碼</h2>
+<pre><code>import os
+import cv2
+from google.colab.patches import cv2_imshow
+from google.colab import drive
+
+# 掛載 Google Drive
+drive.mount('/content/drive')
+
+# 切換至指定資料夾
+os.chdir('/content/drive/My Drive/Colab Notebooks/Image Process')
+os.listdir()  # 確認目錄內容
+
+# 設定影像路徑
+image_path = "Lenna.bmp"
+
+# 檢查檔案是否存在
+if not os.path.exists(image_path):
+    print(f"Error: Image file not found: {image_path}")
+    exit()
+
+# 讀取影像(灰階)
+image = cv2.imread(image_path, 0)
+print(image.shape)
+
+# 顯示影像
+cv2_imshow(image)
+
+# 儲存影像
+cv2.imwrite('resize.jpg', image)</code></pre>
+      </section>
+
+      <section class="section" id="submit">
+        <h2>四、繳交內容</h2>
+        <p>執行成功的 <strong>截圖</strong>,需含:</p>
+        <ul class="checklist">
+          <li>Colab notebook 顯示的影像 (灰階 Lenna)</li>
+          <li>影像 shape 輸出 (例如 <code>(512, 512)</code>)</li>
+          <li>儲存成功的 <code>resize.jpg</code> 確認</li>
+        </ul>
+      </section>
+
+      <section class="section" id="notes">
+        <h2>五、注意事項</h2>
+        <ul>
+          <li>請確認測試圖片 <code>Lenna.bmp</code> 已放置於指定資料夾</li>
+          <li>若檔案不存在,程式應顯示錯誤訊息</li>
+          <li>請依照步驟執行並觀察執行結果</li>
+          <li>若有問題可先詢問 Colab 內建的 <strong>Gemini</strong>,再問老師</li>
+        </ul>
+        <div class="info" style="margin-top:14px;">
+          <strong>沒有 Lenna.bmp 怎麼辦?</strong> 用任意影像檔即可,但檔名要對到程式中 <code>image_path</code>。或從共用素材夾下載一張範例圖。
+        </div>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="#top">回到本頁頂端</a>
+        <a class="btn primary" href="../../PART I 影像處理基礎/W1 課程介紹與環境建置/本週教學指引.html">回 W1 教學指引</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>
