@@ -5,7 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>教材檢視 ｜ 嵌入式電腦視覺系統</title>
   <link rel="stylesheet" href="css/course.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    // Library 載入狀態追蹤 (給 timeout 判斷用)
+    window._pdfLibLoaded = false;
+    window._pdfLibError = null;
+  </script>
+  <script src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"
+          onload="window._pdfLibLoaded = true;"
+          onerror="window._pdfLibError = 'unpkg CDN 連不到';"></script>
   <style>
     body { background: #1a2435; margin: 0; padding: 0; }
     .viewer-bar {
@@ -129,10 +136,6 @@
   </footer>
 
   <script>
-    // 設定 PDF.js worker
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
     const params = new URLSearchParams(location.search);
     const file = params.get('file');
     const canvas = document.getElementById('pdf-canvas');
@@ -144,6 +147,36 @@
     let scale = 1.5;
     let isRendering = false;
     let pendingPage = null;
+
+    function setStatus(text) {
+      content.innerHTML = text;
+    }
+
+    function showError(html) {
+      content.className = 'error';
+      content.innerHTML = html;
+    }
+
+    // 先檢查 library 載入狀況 (5 秒)
+    function waitForLibrary(retries) {
+      if (window._pdfLibError) {
+        showError('❌ PDF.js library 無法載入<br><br>' +
+                  '<code>' + window._pdfLibError + '</code><br><br>' +
+                  '可能原因:網路問題、防火牆擋 CDN、或瀏覽器離線。<br>' +
+                  '<a href="' + file + '" target="_blank" style="color:#7dd3fc;">改用瀏覽器直接開啟 PDF (Layer 1 失效)</a>');
+        return false;
+      }
+      if (typeof pdfjsLib !== 'undefined') return true;
+      if (retries <= 0) {
+        showError('❌ PDF.js library 載入逾時 (5 秒)<br><br>' +
+                  '可能原因:CDN <code>unpkg.com</code> 連不到。<br>' +
+                  '<a href="' + file + '" target="_blank" style="color:#7dd3fc;">改用瀏覽器直接開啟 PDF (Layer 1 失效)</a>');
+        return false;
+      }
+      setStatus('⏳ 等待 PDF.js library (' + retries + ')...');
+      setTimeout(() => waitForLibrary(retries - 1), 500);
+      return null; // pending
+    }
 
     if (!file) {
       content.className = 'error';
@@ -179,20 +212,69 @@
       }
 
       // 正常路徑:PDF.js (HTTPS / localhost)
-      pdfjsLib.getDocument(file).promise
-        .then(pdf => {
-          pdfDoc = pdf;
-          document.getElementById('page-count').textContent = pdf.numPages;
-          document.getElementById('page-input').max = pdf.numPages;
-          content.style.display = 'none';
-          canvas.style.display = 'block';
-          // 起手用「符合寬度」
-          fitWidth();
-        })
-        .catch(err => {
-          content.className = 'error';
-          content.innerHTML = '❌ 無法載入 PDF<br><br><code>' + err.message + '</code>';
-        });
+      // 先確認 library 已載入
+      const check = waitForLibrary(10);
+      if (check === false) return;  // library 載入失敗
+      if (check === null) {
+        // pending: library 還在載入中,等 callback
+        // 用 polling 等到 library load 完才往下走
+        const waitTimer = setInterval(() => {
+          if (typeof pdfjsLib !== 'undefined') {
+            clearInterval(waitTimer);
+            actuallyLoadPDF();
+          } else if (window._pdfLibError) {
+            clearInterval(waitTimer);
+            showError('❌ PDF.js library 載入失敗:<code>' + window._pdfLibError + '</code>');
+          }
+        }, 200);
+        // 給 8 秒總 timeout
+        setTimeout(() => {
+          clearInterval(waitTimer);
+          if (typeof pdfjsLib === 'undefined') {
+            showError('❌ PDF.js library 載入逾時<br><br>' +
+                      '<a href="' + file + '" target="_blank" style="color:#7dd3fc;">改用瀏覽器直接開啟 PDF (Layer 1 失效)</a>');
+          }
+        }, 8000);
+        return;
+      }
+      actuallyLoadPDF();
+
+      function actuallyLoadPDF() {
+        // 設定 worker (用相同 CDN 的 worker 檔)
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+        setStatus('⏳ 開始載入 PDF...');
+
+        // 8 秒 timeout
+        let timedOut = false;
+        const loadTimeout = setTimeout(() => {
+          timedOut = true;
+          showError('❌ PDF 載入逾時 (8 秒)<br><br>' +
+                    '可能原因:檔案太大、PDF.js worker 卡住、或網路不穩。<br>' +
+                    '<a href="' + file + '" target="_blank" style="color:#7dd3fc;">改用瀏覽器直接開啟 PDF</a>');
+        }, 8000);
+
+        pdfjsLib.getDocument(file).promise
+          .then(pdf => {
+            if (timedOut) return;
+            clearTimeout(loadTimeout);
+            pdfDoc = pdf;
+            document.getElementById('page-count').textContent = pdf.numPages;
+            document.getElementById('page-input').max = pdf.numPages;
+            content.style.display = 'none';
+            canvas.style.display = 'block';
+            // 起手用「符合寬度」
+            fitWidth();
+          })
+          .catch(err => {
+            if (timedOut) return;
+            clearTimeout(loadTimeout);
+            console.error('PDF load error:', err);
+            showError('❌ 無法載入 PDF<br><br><code>' + (err.message || err) + '</code><br><br>' +
+                      '<a href="' + file + '" target="_blank" style="color:#7dd3fc;">改用瀏覽器直接開啟 PDF</a>');
+          });
+      }
     }
 
     function renderPage(num) {
