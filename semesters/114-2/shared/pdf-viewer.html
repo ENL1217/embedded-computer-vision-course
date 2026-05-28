@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>教材檢視 ｜ 嵌入式電腦視覺系統</title>
   <link rel="stylesheet" href="css/course.css">
+  <!-- GA + 翻頁事件 -->
+  <script src="js/analytics.js"></script>
   <!-- PDF.js library 改放本機,避免 Edge Tracking Prevention 與 CDN 不穩問題 -->
   <script src="pdfjs/pdf.min.js"></script>
   <style>
@@ -245,6 +247,16 @@
         page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
           isRendering = false;
           document.getElementById('page-input').value = num;
+
+          // === GA 追蹤翻頁 ===
+          if (window.courseTrack) {
+            window.courseTrack('pdf_page_view', {
+              pdf_file: filename,
+              page_number: num,
+              total_pages: pdfDoc.numPages
+            });
+          }
+
           if (pendingPage !== null) {
             const p = pendingPage;
             pendingPage = null;
