@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W11 YOLO + Tracking ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">Part III AI 電腦視覺技術</a> /
+      W11 YOLO + Tracking
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+      <a class="btn primary" href="../../作業與評量/W11_YOLO_Tracking/index.html">開始 W11 作業</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">Week 11 · Part III · 五範式 RPS 第三棒</p>
+    <h1>W11 YOLO + Tracking(物件偵測 + 多目標追蹤)</h1>
+    <p>從分類進到<strong>物件偵測</strong>(在哪 + 是什麼)。本週 RPS 升級成「框出每隻手 + 標 rock/scissors/paper」,還能跨幀追蹤同一隻手(支援雙手對戰)。<strong>Android 部署改走 Java TFLite API</strong>——這次是真嵌入式,不再透過 Chaquopy。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#schedule">本週要做的事</a>
+      <a href="#files">教材檔案</a>
+      <a href="#detection">物件偵測演進</a>
+      <a href="#metrics">偵測評估指標</a>
+      <a href="#deployment">Java TFLite 部署</a>
+      <a href="#tracking">Tracking 觀念</a>
+      <a href="#assignment">W11 作業</a>
+      <a href="#checklist">學生檢核</a>
+      <a href="#next">下週預告</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="schedule">
+        <h2>本週要做的事</h2>
+        <table>
+          <tr><th>順序</th><th>內容</th><th>預估時間</th></tr>
+          <tr><td>1</td><td>Ch.1 課程定位:從 ML/DL 進到 SOTA 物件偵測</td><td>10 min</td></tr>
+          <tr><td>2</td><td>Ch.2 物件偵測演進:RCNN → YOLO</td><td>20 min</td></tr>
+          <tr><td>3</td><td>Ch.3 評估指標:IoU / mAP / NMS</td><td>20 min</td></tr>
+          <tr><td>4</td><td>Ch.4 YOLOv5 推論實作 (Colab)</td><td>20 min</td></tr>
+          <tr><td>5</td><td>Ch.5 訓練自訂 RPS 資料集</td><td>30 min</td></tr>
+          <tr><td>6</td><td>Ch.6 模型轉換 + 量化 (ONNX / TFLite + fp16)</td><td>20 min</td></tr>
+          <tr><td>7</td><td>Ch.7 <strong>Android Java TFLite 部署</strong>(主菜)</td><td>40 min</td></tr>
+          <tr><td>8</td><td>Ch.8-10 Tracking 觀念 + ByteTrack + Action Recognition</td><td>30 min</td></tr>
+          <tr><td>9</td><td>Ch.11 研究級對比 + 作業 + Benchmark 文化</td><td>10 min</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="files">
+        <h2>教材檔案</h2>
+        <ul class="file-list">
+          <li>
+            <a href="YOLO_Tracking.pptx" target="_blank">📂 YOLO_Tracking.pptx (原始檔)</a>
+            <span class="tag">核心投影片</span><br>
+            86 張,11 章節。<span class="muted">※ PPT 待轉 PDF 後可線上檢視</span>
+          </li>
+          <li>共用模型 (<code>shared/assets/models/</code>):
+            <ul>
+              <li><code>yolov5s.pt</code> — YOLOv5 預訓練(14.8 MB)</li>
+              <li><code>yolov5s-fp16-nms.tflite</code> — Android 部署版,fp16 量化 + NMS 內建</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" id="detection">
+        <h2>物件偵測演進(RCNN → YOLO)</h2>
+        <p>從「找哪裡有東西」變成「找 + 分類」一步完成:</p>
+        <ul>
+          <li><strong>R-CNN</strong> (2014):Selective Search 提 region + CNN 分類。慢</li>
+          <li><strong>Fast R-CNN</strong> (2015):RoI Pooling 共用特徵。快一點</li>
+          <li><strong>Faster R-CNN</strong> (2015):Region Proposal Network。再快</li>
+          <li><strong>YOLO</strong> (2016):一刀切,直接 grid 預測。<strong>從 two-stage 變 one-stage</strong></li>
+          <li><strong>YOLOv5/v8/v11</strong>:工業界事實標準,容易訓練 + 部署</li>
+        </ul>
+      </section>
+
+      <section class="section" id="metrics">
+        <h2>物件偵測的評估指標(W10 升級版)</h2>
+        <div class="grid">
+          <div class="card soft">
+            <h3>IoU (Intersection over Union)</h3>
+            <p>預測框與真實框的重疊面積 / 聯集面積。IoU > 0.5 才算「對」。</p>
+          </div>
+          <div class="card soft">
+            <h3>mAP (mean Average Precision)</h3>
+            <p>不同 IoU 閾值下的平均 precision。<strong>業界標準</strong>,paper 必交。</p>
+          </div>
+          <div class="card soft">
+            <h3>NMS (Non-Maximum Suppression)</h3>
+            <p>同一物件可能被預測多次,用 IoU 過濾保留最高信心那個。</p>
+          </div>
+          <div class="card soft">
+            <h3>FPS 與延遲</h3>
+            <p>嵌入式系統的硬性指標 — 模型再強,跑不到 10 FPS 沒實用價值。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="deployment">
+        <h2>Android Java TFLite 部署 ⭐ 本週主菜</h2>
+        <p>W10 路線 C/D 因為 tflite-runtime 沒 cp310 wheel,被迫走 Colab Local Runtime。本週<strong>跳過 Chaquopy,直接用 Java TFLite API</strong>(業界正解):</p>
+<pre><code>// Java 端
+Interpreter tflite = new Interpreter(modelFile);
+tflite.run(inputBuffer, outputBuffer);</code></pre>
+        <h3>關鍵工程坑</h3>
+        <ul>
+          <li><strong>Input shape 不符</strong>:先用 <code>interpreter.getInputTensor(0).shape()</code> 確認</li>
+          <li><strong>NMS 後處理</strong>:export 時加 <code>nms=True</code>,省 Java 端 NMS 邏輯</li>
+          <li><strong>推論慢</strong>:<code>Interpreter.Options().setNumThreads(4)</code> 或 GPU delegate</li>
+          <li><strong>OOM</strong>:大模型 + Bitmap 雙重消耗,注意釋放 ImageProxy</li>
+        </ul>
+      </section>
+
+      <section class="section" id="tracking">
+        <h2>Tracking 觀念與應用</h2>
+        <p>偵測 = 每幀獨立找物件;追蹤 = 跨幀知道是同一個。應用:</p>
+        <ul>
+          <li>雙手對戰 RPS — 知道左手選了什麼、右手選了什麼</li>
+          <li>運動分析 — 球員軌跡</li>
+          <li>監視系統 — 追隨可疑人物</li>
+          <li>Action Recognition — 看一段軌跡判斷動作</li>
+        </ul>
+
+        <h3>現代 MOT (Multi-Object Tracking)</h3>
+        <ul>
+          <li><strong>SORT</strong> (Bewley 2016):Kalman + Hungarian 匹配</li>
+          <li><strong>DeepSORT</strong> (Wojke 2017):+ Re-ID 特徵</li>
+          <li><strong>ByteTrack</strong> (Zhang 2022):每個 detection 都用,效果好且快</li>
+        </ul>
+      </section>
+
+      <section class="section" id="assignment">
+        <h2>W11 作業</h2>
+        <p>三件套:訓練 + 部署 + 比較。<strong>詳見作業頁</strong>。</p>
+        <ul>
+          <li>YOLOv5 自訂 RPS 資料集訓練</li>
+          <li>轉成 TFLite + Android Java 部署</li>
+          <li>加入 ByteTrack 追蹤</li>
+          <li>跟 W10 ML/DL 比較(mAP、FPS、模型大小)</li>
+          <li>30 秒影片 + 簡易報告</li>
+        </ul>
+        <p><a class="btn primary" href="../../作業與評量/W11_YOLO_Tracking/index.html">查看完整作業頁 →</a></p>
+      </section>
+
+      <section class="section" id="checklist">
+        <h2>學生檢核表</h2>
+        <ul class="checklist">
+          <li>我理解 YOLO 為什麼比 R-CNN 快</li>
+          <li>我能說明 IoU、mAP、NMS 各自在做什麼</li>
+          <li>我會用 YOLOv5 訓練自訂資料集</li>
+          <li>我會用 <code>model.export(format='tflite', nms=True)</code></li>
+          <li>我能在 Android 上跑 Java TFLite (不透過 Chaquopy)</li>
+          <li>我理解 ByteTrack 的基本流程</li>
+        </ul>
+      </section>
+
+      <section class="section" id="next">
+        <h2>下週預告 (W12)</h2>
+        <p>第四種範式 — <strong>MediaPipe 骨架偵測</strong>:</p>
+        <ul>
+          <li>Hands 21 點 landmark 直接給(免訓練)</li>
+          <li>內部架構(palm detector + landmark estimator 兩階段)</li>
+          <li>用彎曲度算法做 RPS</li>
+          <li>Action Recognition 從靜態到動態</li>
+        </ul>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="../W10 ML DL RPS/本週教學指引.html">← W10</a>
+        <a class="btn primary" href="../W12 MediaPipe 骨架/本週教學指引.html">W12 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

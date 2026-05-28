@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W10 作業 ｜ ML / DL RPS ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">作業與評量</a> /
+      W10 ML / DL RPS
+    </div>
+    <div class="actions">
+      <a class="btn" href="../index.html">作業總覽</a>
+      <a class="btn primary" href="../../PART III AI電腦視覺技術/W10 ML DL RPS/本週教學指引.html">回 W10 教學指引</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">W10 作業 · Part III · 同題目換 AI 做</p>
+    <h1>用 ML / DL 完成猜拳辨識</h1>
+    <p>挑一條(或多條)路線,訓練 + 部署 + 跟 W9 規則法對比。看到 60-80% → 90%+ 的提升,並理解代價。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#goal">一、作業目標</a>
+      <a href="#content">二、作業內容</a>
+      <a href="#bonus">三、加分項</a>
+      <a href="#submit">四、繳交內容</a>
+      <a href="#tips">五、注意事項</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="goal">
+        <h2>一、作業目標</h2>
+        <p>體驗「特徵由演算法從資料學出來」比手刻好多少。完成至少一條路線(B/C/D 任挑),並產出 Confusion Matrix 跟 W9 規則法對比。</p>
+      </section>
+
+      <section class="section" id="content">
+        <h2>二、作業內容</h2>
+
+        <div class="card soft">
+          <h3>必做(任挑一條)</h3>
+          <p><strong>路線 B:HoG + SVM(部署到 Android Chaquopy)</strong></p>
+          <ol>
+            <li>Colab 訓練 HoG+SVM 模型,存成 <code>hog_svm_rps.pkl</code></li>
+            <li>Android 端用 Chaquopy 載入 .pkl(<code>joblib.load</code>)</li>
+            <li>跑即時 RPS 辨識</li>
+            <li>產出 Confusion Matrix</li>
+          </ol>
+          <p><strong>或 路線 C/D:Tiny CNN / MobileNetV2(部署到 Colab Local Runtime)</strong></p>
+          <ol>
+            <li>Colab 訓練,存 .tflite</li>
+            <li>Colab Local Runtime + 本地 webcam 即時推論</li>
+            <li>產出 Confusion Matrix</li>
+          </ol>
+        </div>
+
+        <div class="card" style="margin-top:14px;">
+          <h3>必做:對比表</h3>
+          <p>跟 W9 規則法對比,至少含:</p>
+          <ul>
+            <li>正確率(整體 + 每類)</li>
+            <li>推論延遲(ms / frame)</li>
+            <li>模型大小</li>
+            <li>失敗 case 各 1 個</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="bonus">
+        <h2>三、加分項(任選)</h2>
+        <ul>
+          <li><strong>(+2)</strong> 同時跑路線 B + C + D,三方法對比</li>
+          <li><strong>(+2)</strong> 自己拍 RPS 資料集(每類 50+ 張)取代教材附的</li>
+          <li><strong>(+2)</strong> 跑 Data Augmentation 並對比有 / 無 augmentation 的差異</li>
+          <li><strong>(+2)</strong> 在 Android Chaquopy 上整合 W9 規則法 + W10 ML 投票</li>
+        </ul>
+      </section>
+
+      <section class="section" id="submit">
+        <h2>四、繳交內容</h2>
+        <ul class="checklist">
+          <li><strong>30 秒測試影片</strong>:展示即時 RPS,標出正確率</li>
+          <li><strong><code>.doc</code> / <code>.pdf</code> 簡易報告</strong>:含 Confusion Matrix + 與 W9 對比表 + 心得</li>
+          <li>Colab notebook 或程式碼</li>
+        </ul>
+      </section>
+
+      <section class="section" id="tips">
+        <h2>五、注意事項</h2>
+        <ul>
+          <li><strong>scikit-learn 鎖 1.4.0</strong>:Colab 與 Chaquopy 都 pin <code>scikit-learn==1.4.0</code>,避免版本不一致</li>
+          <li><strong>NumPy 鎖 &lt;2</strong>:Local Runtime 端</li>
+          <li>路線 C/D 不能走 Chaquopy 是因為 <code>tflite-runtime</code> 沒 cp310 wheel(已知工程坑)</li>
+          <li>第一次訓練 GPU runtime 可能要等 Colab 排隊</li>
+          <li>共用模型 (<code>shared/assets/models/</code>) 是預訓練版,可直接拿來驗證 pipeline</li>
+        </ul>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="#top">回到本頁頂端</a>
+        <a class="btn primary" href="../../PART III AI電腦視覺技術/W10 ML DL RPS/本週教學指引.html">回 W10 教學指引</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

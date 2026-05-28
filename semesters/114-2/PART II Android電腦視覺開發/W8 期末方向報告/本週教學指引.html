@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W8 期末方向報告 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">Part II Android 電腦視覺開發</a> /
+      W8 期末方向報告
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">Week 8 · Part II 收尾 · 學生主導</p>
+    <h1>W8 期末專題方向報告</h1>
+    <p>本週<strong>沒有新教材</strong>,完全交給學生:每組 5-10 分鐘簡報期末專題方向 + 老師現場給建議。整個 Part 1+2 學完後,你已有判斷力知道「什麼題目用古典 CV / 什麼要等 AI」。早點開始想 → 早期 feedback → 不會拖到最後一週。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#why">為什麼 W8 是這樣設計</a>
+      <a href="#schedule">本週流程</a>
+      <a href="#report">簡報內容</a>
+      <a href="#evaluation">老師現場給的建議</a>
+      <a href="#examples">過去學生常見題目方向</a>
+      <a href="#next">下週預告</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="why">
+        <h2>為什麼 W8 是這樣設計</h2>
+        <p>本課程把<strong>期末方向報告</strong>放在 W8(而不是學期末才提),原因:</p>
+        <ul>
+          <li><strong>學生提前想期末</strong>:不會拖到最後一週才開始</li>
+          <li><strong>早期 feedback</strong>:老師早期糾正方向,學生不會做白工</li>
+          <li><strong>Part 1+2 學完才提</strong>:你已有古典 CV 工具,知道哪些題目<em>不需要 AI</em></li>
+          <li><strong>W9-W13 學新工具時,腦中有具體題目</strong>:看 YOLO 會想「這個是不是我期末能用」</li>
+        </ul>
+      </section>
+
+      <section class="section" id="schedule">
+        <h2>本週流程(3 小時)</h2>
+        <table>
+          <tr><th>時段</th><th>內容</th></tr>
+          <tr><td>0-15 分鐘</td><td>報告流程說明 + 評分標準</td></tr>
+          <tr><td>15-150 分鐘</td><td>每組 5-7 分鐘簡報 + 2 分鐘 Q&A(依組數調整時間)</td></tr>
+          <tr><td>150-180 分鐘</td><td>老師總評 + 給每組方向建議</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="report">
+        <h2>簡報內容(每組必含)</h2>
+        <ol class="flow">
+          <li><strong>問題</strong>:你想解決什麼真實情境的問題?(1 張投影片)</li>
+          <li><strong>輸入輸出</strong>:App 收什麼影像?輸出什麼結果?(1 張)</li>
+          <li><strong>方法初步構想</strong>:用古典 CV?ML?DL?或哪幾個組合?(1 張)</li>
+          <li><strong>挑戰預估</strong>:你預期什麼會卡(資料?光線?手機效能?)(1 張)</li>
+          <li><strong>時間規劃</strong>:W9-W15 你要怎麼分配進度(1 張)</li>
+        </ol>
+        <p class="muted">總共 5 張投影片左右,5-7 分鐘講完。簡單為佳,不用做太精緻。</p>
+      </section>
+
+      <section class="section" id="evaluation">
+        <h2>老師現場給的建議方向</h2>
+        <p>老師會看每組題目,當場給以下哪一類建議:</p>
+        <div class="grid">
+          <div class="card soft">
+            <h3>🎯 題目可行,直接開工</h3>
+            <p>方向合理 + 時間規劃合理 + 工具選擇對。W9 開始就跑。</p>
+          </div>
+          <div class="card soft">
+            <h3>📐 題目太大,要收斂</h3>
+            <p>常見:「我想做自駕車」「我想做行人偵測商業 App」。<br>建議切到「能在 6 週內完成」的雛形。</p>
+          </div>
+          <div class="card soft">
+            <h3>🔧 題目要換工具</h3>
+            <p>常見:用古典 CV 做語意辨識(會很苦),或用大模型做簡單任務(浪費)。</p>
+          </div>
+          <div class="card soft">
+            <h3>🔄 題目重疊,鼓勵分工</h3>
+            <p>兩組做類似題目,建議差異化或交叉驗證。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="examples">
+        <h2>過去學生常見題目方向(僅供參考)</h2>
+        <ul>
+          <li><strong>運動分析</strong>:籃球投籃軌跡追蹤、瑜伽姿勢檢查</li>
+          <li><strong>無障礙輔助</strong>:盲人辨識路標、手語翻譯</li>
+          <li><strong>產線品質</strong>:瑕疵檢測、零件分類</li>
+          <li><strong>農業</strong>:水果成熟度、害蟲識別</li>
+          <li><strong>互動娛樂</strong>:AR 濾鏡、手勢遊戲</li>
+          <li><strong>個人應用</strong>:植物辨識、寵物追蹤、字幕產生</li>
+        </ul>
+        <div class="info" style="margin-top:14px;">
+          <strong>挑題小提醒</strong>:
+          <ul>
+            <li>你能拿到資料嗎?(沒資料的話用預訓練模型 fine-tune)</li>
+            <li>有 baseline 可以比嗎?</li>
+            <li>能做出 30 秒 demo 影片嗎?</li>
+            <li>W15 報告時能呈現具體成果嗎?</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="next">
+        <h2>下週預告 (W9) ⭐ Part III 起點</h2>
+        <p>Part III 正式進入 AI 五範式做 RPS 系列。<strong>同一個猜拳辨識題目,W9-W13 用五種完全不同方法做</strong>。整套做完,你會看到工具光譜全貌,選工具的工程判斷力就根植了。</p>
+        <ul>
+          <li><strong>W9</strong>:傳統 CV 規則法(HSV + 形態學 + 凸缺陷)</li>
+          <li>W10:ML / DL(SVM + HoG / Tiny CNN / MobileNetV2)</li>
+          <li>W11:YOLO + Tracking</li>
+          <li>W12:MediaPipe 骨架</li>
+          <li>W13:ML Kit Vision API</li>
+        </ul>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="../W7 古典 CV 在 Android/本週教學指引.html">← W7</a>
+        <a class="btn primary" href="../../PART III AI電腦視覺技術/W9 傳統 CV 規則法 RPS/本週教學指引.html">W9 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

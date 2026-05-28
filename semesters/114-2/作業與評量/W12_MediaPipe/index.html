@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W12 作業 ｜ MediaPipe ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">作業與評量</a> /
+      W12 MediaPipe
+    </div>
+    <div class="actions">
+      <a class="btn" href="../index.html">作業總覽</a>
+      <a class="btn primary" href="../../PART III AI電腦視覺技術/W12 MediaPipe 骨架/本週教學指引.html">回 W12 教學指引</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">W12 作業 · Part III · 骨架點偵測</p>
+    <h1>MediaPipe Hands RPS + Action Recognition</h1>
+    <p>用 MediaPipe Tasks API 抓 21 點 landmark,實作彎曲度算法做 RPS。延伸到動態手勢識別。零訓練、95%+ 正確率、30 FPS。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#goal">一、作業目標</a>
+      <a href="#content">二、作業內容</a>
+      <a href="#bonus">三、加分項</a>
+      <a href="#submit">四、繳交內容</a>
+      <a href="#tips">五、注意事項</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="goal">
+        <h2>一、作業目標</h2>
+        <p>用 MediaPipe Tasks API 在 Android 上即時抓手部 21 點 landmark,用彎曲度算法做 RPS,跟 W9-W11 對比。體會「結構化資訊 vs 像素特徵」的差別。</p>
+      </section>
+
+      <section class="section" id="content">
+        <h2>二、作業內容</h2>
+        <ol class="flow">
+          <li><strong>裝套件</strong>:<code>build.gradle</code> 加 <code>tasks-vision:0.10.x</code></li>
+          <li><strong>取得 landmark</strong>:CameraX <code>ImageAnalysis</code> + <code>HandLandmarker.detect</code></li>
+          <li><strong>RPS 邏輯</strong>:寫彎曲度算法,判斷每根手指 伸直/彎曲</li>
+          <li><strong>UI 顯示</strong>:畫 21 點 + 連線 + RPS 結果</li>
+          <li><strong>對比</strong>:跟 W9 規則法、W10 ML/DL、W11 YOLO 對照(正確率 / FPS / 模型大小 / 開發成本)</li>
+        </ol>
+
+        <h3>彎曲度算法骨架</h3>
+<pre><code>// 對每根手指(4 根除大拇指)
+for finger in [INDEX, MIDDLE, RING, PINKY]:
+    base = landmarks[finger.MCP]       // 掌根
+    mid  = landmarks[finger.PIP]       // 第一節
+    tip  = landmarks[finger.TIP]       // 指尖
+
+    // 三點是否大致共線?
+    if angle(base, mid, tip) > 150°:
+        finger.straight = True
+    else:
+        finger.straight = False
+
+// 規則
+if 0 straight: 'rock'
+elif 2 straight (INDEX + MIDDLE): 'scissors'
+elif 4+ straight: 'paper'</code></pre>
+      </section>
+
+      <section class="section" id="bonus">
+        <h2>三、加分項</h2>
+        <ul>
+          <li><strong>(+2)</strong> Action Recognition:用 1 秒內 landmark 序列識別動態手勢(揮手、轉手)</li>
+          <li><strong>(+2)</strong> 雙手對戰 RPS:畫面同時兩隻手都辨識</li>
+          <li><strong>(+2)</strong> 大拇指獨立判斷:加大拇指識別讚 / 倒讚</li>
+          <li><strong>(+3)</strong> Custom Solutions: 用 Model Maker 訓練自訂手勢(例如 OK、stop)</li>
+        </ul>
+      </section>
+
+      <section class="section" id="submit">
+        <h2>四、繳交內容</h2>
+        <ul class="checklist">
+          <li><strong>30 秒測試影片</strong>:RPS 三種手勢 + (加分項)其他手勢</li>
+          <li><strong>簡易報告</strong>:含彎曲度規則 + W9-W12 四範式對比表</li>
+          <li>Android 專案(GitHub repo)</li>
+        </ul>
+      </section>
+
+      <section class="section" id="tips">
+        <h2>五、注意事項</h2>
+        <ul>
+          <li>MediaPipe Tasks API 跟 Chaquopy 完全無關,純 Java SDK</li>
+          <li>landmark 的 z 值是<strong>相對深度</strong>,不是真 3D(camera 看到的相對遠近)</li>
+          <li>角度算錯記得用 <code>atan2</code> 不要用 <code>asin</code></li>
+          <li>FPS 預期 30 (這就是 MediaPipe 的優勢)</li>
+          <li>共用 notebook <code>shared/notebooks/mediapipe_body_skeleton.ipynb</code> 是 Body skeleton 不是 Hands,參考概念即可</li>
+        </ul>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="#top">回到本頁頂端</a>
+        <a class="btn primary" href="../../PART III AI電腦視覺技術/W12 MediaPipe 骨架/本週教學指引.html">回 W12 教學指引</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

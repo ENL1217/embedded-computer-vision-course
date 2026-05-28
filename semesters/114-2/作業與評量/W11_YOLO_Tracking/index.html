@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W11 作業 ｜ YOLO + Tracking ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">作業與評量</a> /
+      W11 YOLO + Tracking
+    </div>
+    <div class="actions">
+      <a class="btn" href="../index.html">作業總覽</a>
+      <a class="btn primary" href="../../PART III AI電腦視覺技術/W11 YOLO Tracking/本週教學指引.html">回 W11 教學指引</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">W11 作業 · Part III · 物件偵測 + 多目標追蹤</p>
+    <h1>YOLOv5 自訓 + Android Java TFLite 部署</h1>
+    <p>從分類進到偵測。RPS 升級成「框出每隻手 + 標 class」,雙手對戰也能追蹤。本週 Android 部署改走 Java TFLite,真嵌入式。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#goal">一、作業目標</a>
+      <a href="#content">二、作業內容</a>
+      <a href="#bonus">三、加分項</a>
+      <a href="#submit">四、繳交內容</a>
+      <a href="#tips">五、注意事項</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="goal">
+        <h2>一、作業目標</h2>
+        <p>用 YOLOv5 訓練自訂 RPS 資料集,轉成 TFLite,部署到 Android Java(不透過 Chaquopy)。整合 ByteTrack 做雙手追蹤。產出 mAP 跟 W10 對比。</p>
+      </section>
+
+      <section class="section" id="content">
+        <h2>二、作業內容</h2>
+        <ol class="flow">
+          <li><strong>資料</strong>:用教材附的 RPS 資料集 或 自拍(每類 30+ 張)</li>
+          <li><strong>標註</strong>:用 Roboflow / LabelImg 標 bounding box(YOLO 格式)</li>
+          <li><strong>訓練</strong>:Colab 跑 <code>yolov5s.pt</code> fine-tune (epochs=50-100)</li>
+          <li><strong>轉換</strong>:<code>model.export(format='tflite', nms=True)</code></li>
+          <li><strong>部署</strong>:Android Java + TFLite Interpreter,即時偵測</li>
+          <li><strong>追蹤</strong>:加入 ByteTrack(或 SORT),雙手出現時各分配 track ID</li>
+          <li><strong>對比</strong>:跑 mAP + FPS,跟 W10 ML/DL 比</li>
+        </ol>
+      </section>
+
+      <section class="section" id="bonus">
+        <h2>三、加分項</h2>
+        <ul>
+          <li><strong>(+2)</strong> Action Recognition:用追蹤軌跡判斷「揮拳出招」動作</li>
+          <li><strong>(+2)</strong> GPU delegate 加速,FPS 從 ~15 拉到 ~25+</li>
+          <li><strong>(+2)</strong> 含 Re-ID:同一隻手離開畫面再進來能認回同一個 ID</li>
+          <li><strong>(+2)</strong> 雙手對戰判勝負邏輯</li>
+        </ul>
+      </section>
+
+      <section class="section" id="submit">
+        <h2>四、繳交內容</h2>
+        <ul class="checklist">
+          <li><strong>30 秒測試影片</strong>:包含單手 + 雙手對戰情境</li>
+          <li><strong>簡易報告</strong>:含 mAP / FPS / 模型大小 + 跟 W10 對比表</li>
+          <li>Android 專案(GitHub repo)+ Colab 訓練 notebook</li>
+        </ul>
+      </section>
+
+      <section class="section" id="tips">
+        <h2>五、注意事項</h2>
+        <ul>
+          <li>YOLOv5 export TFLite 一定要加 <code>nms=True</code>,省下 Java 端 NMS 麻煩</li>
+          <li><strong>Input shape 不符</strong>:用 <code>interpreter.getInputTensor(0).shape()</code> 確認</li>
+          <li>大模型 OOM 時用 fp16 量化(教材附的 <code>yolov5s-fp16-nms.tflite</code> 就是)</li>
+          <li><code>STRATEGY_KEEP_ONLY_LATEST</code> 一定要設,否則 frame 堆積</li>
+          <li>ByteTrack 實作可以直接用開源 Java port(GitHub 上找)</li>
+        </ul>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="#top">回到本頁頂端</a>
+        <a class="btn primary" href="../../PART III AI電腦視覺技術/W11 YOLO Tracking/本週教學指引.html">回 W11 教學指引</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

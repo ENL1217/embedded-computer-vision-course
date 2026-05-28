@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W6 作業 ｜ Android Python OpenCV 練習 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">作業與評量</a> /
+      W6 Android Python OpenCV
+    </div>
+    <div class="actions">
+      <a class="btn" href="../index.html">作業總覽</a>
+      <a class="btn primary" href="../../PART II Android電腦視覺開發/W6 Android Chaquopy 環境/本週教學指引.html">回 W6 教學指引</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">W6 作業 · Part II · Android 起點</p>
+    <h1>Android Python OpenCV 練習</h1>
+    <p>完成 Chaquopy 講義 Ch.8 的練習。在 Android 模擬器或實機上跑通:Python OpenCV 讀圖 → 處理 → 顯示完整流程。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#goal">一、作業目標</a>
+      <a href="#content">二、作業內容</a>
+      <a href="#submit">三、繳交內容</a>
+      <a href="#tips">四、注意事項</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="goal">
+        <h2>一、作業目標</h2>
+        <p>把 W6 學到的 <strong>Chaquopy + Python OpenCV</strong> 完整跑通一次:從 Android 端讀圖、傳給 Python 處理、再把結果顯示回 Android UI。<strong>整門課所有 Android 端的 CV 實作都從這個基礎延伸</strong>。</p>
+      </section>
+
+      <section class="section" id="content">
+        <h2>二、作業內容</h2>
+        <p>執行完成 Chaquopy 講義<strong>第 8 章</strong>,確認可在 Android 模擬器(或實體手機)上完成:</p>
+        <ol class="flow">
+          <li><strong>可讀圖</strong> — 從 assets 或 SD card 讀出 Bitmap</li>
+          <li><strong>可透過 Python OpenCV 處理圖片</strong> — 至少跑一個處理(例如灰階化、二值化、邊緣偵測任挑)</li>
+          <li><strong>可顯示處理後的圖片</strong> — 顯示在 ImageView</li>
+        </ol>
+
+        <h3>核心程式架構</h3>
+<pre><code>// Java 端
+byte[] imageBytes = readBitmapAsBytes(...);
+PyObject result = Python.getInstance()
+    .getModule("main")
+    .callAttr("process", imageBytes);
+byte[] processedJpeg = result.toJava(byte[].class);
+Bitmap bmp = BitmapFactory.decodeByteArray(
+    processedJpeg, 0, processedJpeg.length);
+imageView.setImageBitmap(bmp);</code></pre>
+
+<pre><code># Python 端 main.py
+import cv2
+import numpy as np
+
+def process(image_bytes):
+    arr = np.frombuffer(bytes(image_bytes), np.uint8)
+    img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+
+    # 你的處理 — 灰階 / 二值化 / Canny 任挑
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    ok, buf = cv2.imencode('.jpg', gray)
+    return buf.tobytes()</code></pre>
+      </section>
+
+      <section class="section" id="submit">
+        <h2>三、繳交內容</h2>
+        <p>Android <strong>模擬器或手機畫面截圖</strong>,需含:</p>
+        <ul class="checklist">
+          <li>App 主畫面</li>
+          <li>原圖 + 處理後的圖(都顯示在 ImageView)</li>
+          <li>明顯看得出有處理過(例如灰階看得出顏色掉了)</li>
+        </ul>
+      </section>
+
+      <section class="section" id="tips">
+        <h2>四、注意事項</h2>
+        <ul>
+          <li>第一次 build 安裝 <code>opencv-python</code> 大約要 <strong>5-10 分鐘</strong>(Chaquopy 編譯),請耐心等</li>
+          <li><code>build.gradle</code> ABI filter 建議設 <code>arm64-v8a</code> 和 <code>x86_64</code>(模擬器和實機都能跑)</li>
+          <li>Python 套件版本鎖定 <code>numpy</code> 和 <code>opencv-python</code> 即可(讓 Chaquopy 自選相容版本)</li>
+          <li>App crash 看 Logcat 過濾 <code>python</code> 關鍵字,會看到 Python traceback</li>
+          <li>用 Git 把專案備份到 GitHub (參考 <a href="../../PART II Android電腦視覺開發/W6 Android Chaquopy 環境/Android Git版本管理.txt" target="_blank">Android Git 版本管理</a>)</li>
+          <li>有問題可先問 Colab 內建 Gemini 或老師</li>
+        </ul>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="#top">回到本頁頂端</a>
+        <a class="btn primary" href="../../PART II Android電腦視覺開發/W6 Android Chaquopy 環境/本週教學指引.html">回 W6 教學指引</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

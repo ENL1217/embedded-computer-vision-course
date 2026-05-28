@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W14 CV 研究地圖 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">Part III AI 電腦視覺技術</a> /
+      W14 CV 研究地圖
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">Week 14 · Part III · 結業講</p>
+    <h1>W14 CV 新研究與閱讀地圖</h1>
+    <p>整門課最後一週「課堂講授」。從「<strong>會用工具</strong>」過渡到「<strong>能跟世界對話</strong>」。整門課回顧 → CV 領域全景 → 2024-2026 熱門研究 → 嵌入式 CV 研究軸線 → 怎麼讀 paper → 怎麼啟動自己的研究。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#schedule">本週要做的事</a>
+      <a href="#files">教材檔案</a>
+      <a href="#review">整門課回顧</a>
+      <a href="#trends">熱門研究方向</a>
+      <a href="#paper-reading">怎麼讀 paper</a>
+      <a href="#venues">頂級會議</a>
+      <a href="#startup">啟動自己的研究</a>
+      <a href="#next">下週預告</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="schedule">
+        <h2>本週要做的事</h2>
+        <table>
+          <tr><th>順序</th><th>內容</th><th>預估時間</th></tr>
+          <tr><td>1</td><td>Ch.1 整門課回顧:你走了哪條路</td><td>30 min</td></tr>
+          <tr><td>2</td><td>Ch.2 CV 領域全景:你還沒碰過的世界</td><td>30 min</td></tr>
+          <tr><td>3</td><td>Ch.3 <strong>2024-2026 CV 熱門研究方向</strong>(主菜)</td><td>60 min</td></tr>
+          <tr><td>4</td><td>Ch.4 嵌入式 CV 的研究軸線</td><td>30 min</td></tr>
+          <tr><td>5</td><td>Ch.5 怎麼讀 paper:研究生核心技能</td><td>30 min</td></tr>
+          <tr><td>6</td><td>Ch.6 頂級會議與開源生態</td><td>15 min</td></tr>
+          <tr><td>7</td><td>Ch.7 怎麼啟動你自己的研究</td><td>20 min</td></tr>
+          <tr><td>8</td><td>Ch.8 結尾與打氣</td><td>10 min</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="files">
+        <h2>教材檔案</h2>
+        <ul class="file-list">
+          <li>
+            <a href="W14_CV研究地圖.pptx" target="_blank">📂 W14_CV研究地圖.pptx (原始檔)</a>
+            <span class="tag">核心投影片</span><br>
+            54 張,8 章結業講。<span class="muted">※ PPT 待轉 PDF 後可線上檢視</span>
+          </li>
+          <li>
+            <a href="CV頂級會議.html" target="_blank">📖 CV 頂級會議清單</a>
+            <span class="tag secondary">參考資料</span><br>
+            CVPR / ICCV / ECCV / NeurIPS / TPAMI 等會議介紹。
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" id="review">
+        <h2>整門課回顧:五個階段</h2>
+        <table>
+          <tr><th>階段</th><th>週次</th><th>核心</th><th>你學到什麼</th></tr>
+          <tr><td>1</td><td>W1-W5</td><td>影像物理與表示</td><td>光 → 像素 → 空間 → 色彩</td></tr>
+          <tr><td>2</td><td>W6-W7</td><td>古典特徵抽取</td><td>結構(邊/形態學)→ 指紋(SIFT/ORB)</td></tr>
+          <tr><td>3</td><td>W8</td><td>期末方向自選</td><td>從「能做什麼」變「想做什麼」</td></tr>
+          <tr><td>4</td><td>W9-W13</td><td>五範式做 RPS</td><td>規則法 → ML → DL → 骨架 → API,五種工具光譜</td></tr>
+          <tr><td>5</td><td>W14</td><td>研究方向地圖</td><td>從工具人變研究者</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="trends">
+        <h2>2024-2026 CV 熱門研究方向 ⭐ 本週主菜</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>🌟 Foundation Models</h3>
+            <ul>
+              <li>CLIP (2021):圖文對齊</li>
+              <li>SAM (2023):Segment Anything</li>
+              <li>DINOv2 (2023):自監督特徵</li>
+              <li>方向:訓更大 + 任務泛化</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>🌐 3D & World Models</h3>
+            <ul>
+              <li>NeRF (2020):神經輻射場</li>
+              <li><strong>3D Gaussian Splatting (2023)</strong>:即時 NeRF</li>
+              <li>World Models:預測未來</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>🎨 Generative Vision</h3>
+            <ul>
+              <li>Stable Diffusion / DALL-E / Imagen</li>
+              <li>Video generation (Sora, Veo)</li>
+              <li>3D generation</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>🚀 Vision-Language Models</h3>
+            <ul>
+              <li>GPT-4V / Gemini / Claude Vision</li>
+              <li>VLM 端到端理解</li>
+              <li>多模態 reasoning</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>📱 Efficient On-device</h3>
+            <ul>
+              <li>EfficientNet / MobileViT</li>
+              <li>Quantization (int8 / int4)</li>
+              <li>Knowledge Distillation</li>
+              <li><strong>嵌入式 CV 的主戰場</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>🎯 Multi-Modal Embodied AI</h3>
+            <ul>
+              <li>VLA (Vision-Language-Action)</li>
+              <li>Robot manipulation</li>
+              <li>Autonomous agents</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="paper-reading">
+        <h2>怎麼讀 paper(研究生核心技能)</h2>
+        <h3>三遍法(Andrew Ng 推薦)</h3>
+        <ol class="flow">
+          <li><strong>第一遍</strong>(10 分鐘):標題 / Abstract / Intro / Figures。判斷要不要繼續讀</li>
+          <li><strong>第二遍</strong>(1 小時):看完 Method + Experiments,理解到能向別人解釋</li>
+          <li><strong>第三遍</strong>(數天):重現實驗 / 改進想法 / 連結到自己的研究</li>
+        </ol>
+
+        <h3>每篇 paper 要回答的 5 個問題</h3>
+        <ul>
+          <li>What:他們做了什麼?</li>
+          <li>Why:為什麼這重要?跟現有方法的差別是什麼?</li>
+          <li>How:具體方法是什麼?關鍵 insight 是什麼?</li>
+          <li>So What:這對你的研究 / 期末專題有什麼影響?</li>
+          <li>What's Next:他們提到的 future work 是什麼?</li>
+        </ul>
+      </section>
+
+      <section class="section" id="venues">
+        <h2>CV 領域頂級會議與期刊</h2>
+        <div class="grid">
+          <div class="card soft">
+            <h3>三大 CV 頂會</h3>
+            <ul>
+              <li><strong>CVPR</strong>(年度春季,排名 #4 across all sciences!)</li>
+              <li><strong>ICCV</strong>(雙數年)</li>
+              <li><strong>ECCV</strong>(雙數年)</li>
+            </ul>
+          </div>
+          <div class="card soft">
+            <h3>ML 頂會(含大量 CV)</h3>
+            <ul>
+              <li><strong>NeurIPS</strong>(年度冬季)</li>
+              <li><strong>ICML</strong>(年度夏季)</li>
+              <li><strong>ICLR</strong>(年度春季)</li>
+            </ul>
+          </div>
+          <div class="card soft">
+            <h3>期刊</h3>
+            <ul>
+              <li><strong>TPAMI</strong>(IEEE,CV 第一期刊)</li>
+              <li><strong>IJCV</strong>(Springer)</li>
+            </ul>
+          </div>
+          <div class="card soft">
+            <h3>二線會議(也常見好工作)</h3>
+            <ul>
+              <li>BMVC / WACV / ACCV</li>
+              <li>SIGGRAPH(Computer Graphics + Vision)</li>
+            </ul>
+          </div>
+        </div>
+        <p style="margin-top:14px;">詳細列表見 <a href="CV頂級會議.html" target="_blank">CV 頂級會議清單</a>。</p>
+      </section>
+
+      <section class="section" id="startup">
+        <h2>怎麼啟動你自己的研究</h2>
+        <p>從「修完課」到「做研究」的路徑:</p>
+        <ol class="flow">
+          <li><strong>找一個你 paperswithcode 上有 leaderboard 的問題</strong>(可量化是好開始)</li>
+          <li><strong>跑通該領域的 SOTA</strong>(從 baseline 開始)</li>
+          <li><strong>讀近 1 年該 leaderboard 前 5 名的 paper</strong>(知道目前極限)</li>
+          <li><strong>找一個 paper 的「未解決問題」或「失敗情境」</strong>(這就是你的研究問題)</li>
+          <li><strong>實驗 + 寫成 paper</strong>(投 BMVC / WACV 起跳)</li>
+        </ol>
+        <p class="muted">期末專題可朝這方向延伸:把 W9-W13 任何一個範式 + 一個小研究問題 = 你的研究起點。</p>
+      </section>
+
+      <section class="section" id="next">
+        <h2>下週預告 (W15)</h2>
+        <p>學期最後一週 — <strong>期末專題報告</strong>。每組現場 demo + 報告 + 程式碼三件套繳交。</p>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="../W13 ML Kit Vision/本週教學指引.html">← W13</a>
+        <a class="btn primary" href="../W15 期末專題報告/本週教學指引.html">W15 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W10 ML / DL RPS ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">Part III AI 電腦視覺技術</a> /
+      W10 ML / DL RPS
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+      <a class="btn primary" href="../../作業與評量/W10_MLDL_RPS/index.html">開始 W10 作業</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">Week 10 · Part III · 五範式 RPS 第二棒</p>
+    <h1>W10 用 ML / DL 完成猜拳辨識</h1>
+    <p>上週 W9 用古典規則法做 RPS,看到 60-80% 的天花板。本週<strong>同一個題目換三種「會學的方法」</strong>:HoG+SVM、Tiny CNN、MobileNetV2,正確率衝到 90%+。學完後你會理解:「特徵由演算法從資料學出來」比手刻好多少、代價是什麼。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#schedule">本週要做的事</a>
+      <a href="#files">教材檔案</a>
+      <a href="#three-routes">本週三條路</a>
+      <a href="#research-vs">研究 vs 功能實作</a>
+      <a href="#deployment">兩種部署平台</a>
+      <a href="#assignment">W10 作業</a>
+      <a href="#checklist">學生檢核</a>
+      <a href="#next">下週預告</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="schedule">
+        <h2>本週要做的事</h2>
+        <table>
+          <tr><th>順序</th><th>內容</th><th>預估時間</th></tr>
+          <tr><td>1</td><td>Ch.1 從規則法到會學的方法(課程定位)</td><td>10 min</td></tr>
+          <tr><td>2</td><td>Ch.2 <strong>研究 vs 功能實作</strong>(研究生最該分清的事)</td><td>15 min</td></tr>
+          <tr><td>3</td><td>Ch.3 評估指標完整講解(Accuracy / F1 / Confusion Matrix / Latency)</td><td>25 min</td></tr>
+          <tr><td>4</td><td>Ch.4 資料集與前處理(Colab)</td><td>20 min</td></tr>
+          <tr><td>5</td><td>Ch.5 路線 B:HoG + SVM(訓練 + Android Chaquopy 部署)</td><td>30 min</td></tr>
+          <tr><td>6</td><td>Ch.6 路線 C:Tiny CNN(訓練 + Colab Local Runtime 部署)</td><td>30 min</td></tr>
+          <tr><td>7</td><td>Ch.7 路線 D:MobileNetV2 Transfer Learning</td><td>30 min</td></tr>
+          <tr><td>8</td><td>Ch.8 兩種部署平台對比與工程意義</td><td>15 min</td></tr>
+          <tr><td>9</td><td>Ch.9 三方法 × 傳統 CV 系統實測對比(研究級)</td><td>10 min</td></tr>
+          <tr><td>10</td><td>Ch.10 作業 + 常見錯誤排除</td><td>15 min</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="files">
+        <h2>教材檔案</h2>
+        <ul class="file-list">
+          <li>
+            <a href="MLDL_RPS.pptx" target="_blank">📂 MLDL_RPS.pptx (原始檔)</a>
+            <span class="tag">核心投影片</span><br>
+            93 張,10 章節。<span class="muted">※ PPT 待轉 PDF 後可線上檢視</span>
+          </li>
+          <li>
+            <a href="../../shared/pdf-viewer.html?file=../PART%20III%20AI%E9%9B%BB%E8%85%A6%E8%A6%96%E8%A6%BA%E6%8A%80%E8%A1%93/W10%20ML%20DL%20RPS/MLDL_RPS_%E8%AC%9B%E7%BE%A9.pdf" target="_blank">
+              📖 MLDL_RPS_講義.pdf
+            </a>
+            <span class="tag secondary">講義 PDF</span><br>
+            28 頁配套講義,文字版重點 highlight。
+          </li>
+          <li>共用 notebooks (<code>shared/notebooks/</code>):
+            <ul>
+              <li><code>猜拳辨識(ML&amp;DL訓練模型).ipynb</code> — 主要參考</li>
+              <li><code>猜拳辨識(基礎CNN訓練).ipynb</code></li>
+              <li><code>猜拳辨識(三類_rps_修正版).ipynb</code></li>
+              <li><code>手勢辨識_MobileNetV2_RGB強化版.ipynb</code></li>
+            </ul>
+          </li>
+          <li>共用模型 (<code>shared/assets/models/</code>):
+            <ul>
+              <li><code>hog_svm_rps.pkl</code> — HoG+SVM 預訓練</li>
+              <li><code>rps.tflite</code> — Tiny CNN</li>
+              <li><code>rps_mobilenetv2.tflite</code> — MobileNetV2</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" id="three-routes">
+        <h2>本週三條路</h2>
+        <div class="grid three">
+          <div class="card soft">
+            <h3>路線 B｜傳統 ML</h3>
+            <ul>
+              <li><strong>HoG + SVM</strong></li>
+              <li>手工特徵 + 學習式決策邊界</li>
+              <li>部署:Android Chaquopy</li>
+              <li>正確率預期 80-90%</li>
+              <li>模型很小 (~50 KB)</li>
+            </ul>
+          </div>
+          <div class="card soft">
+            <h3>路線 C｜深度學習</h3>
+            <ul>
+              <li><strong>Tiny CNN</strong> 自訓</li>
+              <li>特徵與決策邊界都由資料學</li>
+              <li>部署:Colab Local Runtime + Webcam</li>
+              <li>正確率 85-92%</li>
+              <li>模型約 8 MB</li>
+            </ul>
+          </div>
+          <div class="card soft">
+            <h3>路線 D｜遷移學習</h3>
+            <ul>
+              <li><strong>MobileNetV2</strong> Transfer Learning</li>
+              <li>用大資料集預訓練特徵 + RPS 微調</li>
+              <li>部署:同上</li>
+              <li>正確率 92-97%</li>
+              <li>模型 8.9 MB</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="research-vs">
+        <h2>研究 vs 功能實作(研究生最該分清的事)</h2>
+        <div class="info">
+          本週是整門課<strong>第一次正式把「研究方法論」滲透進教學</strong>。從 W10 起,每週都會要求學生:
+          <ul>
+            <li><strong>至少報告一個評估指標</strong>(不只 accuracy)</li>
+            <li><strong>至少對比一個 baseline</strong>(本週 baseline = W9 規則法)</li>
+            <li>含 Confusion Matrix</li>
+          </ul>
+        </div>
+        <table>
+          <tr><th></th><th>功能實作</th><th>研究級報告</th></tr>
+          <tr><td>目標</td><td>跑得起來</td><td>跟世界對話</td></tr>
+          <tr><td>正確率</td><td>「我看起來還行」</td><td>定量 + Confusion Matrix + 失敗分析</td></tr>
+          <tr><td>實驗</td><td>跑一次就交</td><td>多 seed + 區間估計</td></tr>
+          <tr><td>對比</td><td>無</td><td>跟 baseline / SOTA 比</td></tr>
+          <tr><td>輸出</td><td>能跑的 APK</td><td>能投 paper 的報告</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="deployment">
+        <h2>兩種部署平台(工程取捨)</h2>
+        <p>本週的工程小發現:不是所有 ML/DL 模型都能直接放上 Chaquopy。</p>
+        <div class="grid">
+          <div class="card">
+            <h3>路線 B 部署:Android Chaquopy ✓</h3>
+            <ul>
+              <li>sklearn 有 cp310 wheel,可直接裝</li>
+              <li><code>build.gradle</code> 加 <code>install "scikit-learn==1.4.0"</code></li>
+              <li>用 <code>joblib.load</code> 載入 .pkl</li>
+              <li>真實 on-device 推論</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>路線 C/D 部署:Colab Local Runtime</h3>
+            <ul>
+              <li><strong>tflite-runtime 沒 cp310 wheel</strong> → Chaquopy 路線斷</li>
+              <li>改走 Colab Local Runtime + 本地 webcam</li>
+              <li>W2 已建好的環境直接用</li>
+              <li>缺點:不是真嵌入式部署 (W11 走 Java TFLite 補回來)</li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top:10px;">學生看到這個取捨後,能理解「<strong>選工具不是看最潮,是看真的能跑</strong>」。</p>
+      </section>
+
+      <section class="section" id="assignment">
+        <h2>W10 作業</h2>
+        <p>分兩部分:Colab 訓練 + Android 部署 + 研究級報告。<strong>詳見作業頁</strong>。</p>
+        <ul>
+          <li>路線 B HoG+SVM 在 Android 跑通</li>
+          <li>路線 C/D 在 Colab Local Runtime 跑通</li>
+          <li>產出 Confusion Matrix 與 baseline 對比表</li>
+          <li>30 秒測試影片 + 簡易報告</li>
+        </ul>
+        <p><a class="btn primary" href="../../作業與評量/W10_MLDL_RPS/index.html">查看完整作業頁 →</a></p>
+      </section>
+
+      <section class="section" id="checklist">
+        <h2>學生檢核表</h2>
+        <ul class="checklist">
+          <li>我理解 HoG + SVM 跟 W9 凸缺陷法的差別</li>
+          <li>我會用 Colab 訓練 Tiny CNN + 存 .tflite</li>
+          <li>我會用 Transfer Learning 微調 MobileNetV2</li>
+          <li>我能在 Android 上跑 HoG+SVM 模型</li>
+          <li>我能畫出 Confusion Matrix 並解讀</li>
+          <li>我能跟 W9 規則法做正確率對比</li>
+        </ul>
+      </section>
+
+      <section class="section" id="next">
+        <h2>下週預告 (W11)</h2>
+        <p>從 ML/DL 進到 <strong>SOTA 物件偵測 + 多目標追蹤</strong>:</p>
+        <ul>
+          <li>RCNN → YOLO 演進</li>
+          <li>YOLOv5 自訓 + Java TFLite API 部署(真嵌入式!)</li>
+          <li>ByteTrack 多目標追蹤</li>
+          <li>Action Recognition</li>
+        </ul>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="../W9 傳統 CV 規則法 RPS/本週教學指引.html">← W9</a>
+        <a class="btn primary" href="../W11 YOLO Tracking/本週教學指引.html">W11 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

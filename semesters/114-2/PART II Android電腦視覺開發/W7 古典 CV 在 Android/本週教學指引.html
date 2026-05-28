@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W7 古典 CV 在 Android ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">Part II Android 電腦視覺開發</a> /
+      W7 古典 CV 在 Android
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">Week 7 · Part II · 古典特徵三部曲</p>
+    <h1>W7 古典 CV 在 Android(影像特徵:偵測 / 比對)</h1>
+    <p>W6 環境已搭好,本週把 W3-W5 的工具升級到「<strong>古典特徵抽取</strong>」並全程跑在 Android 上。<br>「什麼是 feature?」三層回答:<strong>W6=結構 / 本週=指紋 / W8=軌跡(已併入 W11)</strong>。本週講邊緣偵測、Hough、形態學、輪廓、Harris/SIFT/ORB、RANSAC。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#schedule">本週要做的事</a>
+      <a href="#files">教材檔案</a>
+      <a href="#structure">「結構」四模組</a>
+      <a href="#fingerprint">「指紋」四模組</a>
+      <a href="#workflow">Android 跑古典 CV</a>
+      <a href="#checklist">學生檢核</a>
+      <a href="#next">下週預告</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="schedule">
+        <h2>本週要做的事</h2>
+        <p class="muted">PPT 共 287 張,涵蓋古典三部曲。本週聚焦「結構 + 指紋」前 190 頁。</p>
+        <table>
+          <tr><th>順序</th><th>內容</th><th>預估時間</th></tr>
+          <tr><td>1</td><td>三週敘事弧線:結構 → 指紋 → 軌跡</td><td>10 min</td></tr>
+          <tr><td>2</td><td><strong>結構</strong>①邊緣偵測:Sobel / Laplacian / DFT / Canny 五步驟</td><td>50 min</td></tr>
+          <tr><td>3</td><td><strong>結構</strong>②Hough Transform:直線 / 圓形 / Accumulator 投票</td><td>35 min</td></tr>
+          <tr><td>4</td><td><strong>結構</strong>③形態學:erosion / dilation / opening / closing</td><td>40 min</td></tr>
+          <tr><td>5</td><td><strong>結構</strong>④輪廓 + 形狀特徵:CCL / 面積 / 緊密度 / 圓度量</td><td>30 min</td></tr>
+          <tr><td>6</td><td><strong>指紋</strong>①Harris / FAST 角點偵測</td><td>30 min</td></tr>
+          <tr><td>7</td><td><strong>指紋</strong>②SIFT 四階段 + ORB(嵌入式王牌)</td><td>40 min</td></tr>
+          <tr><td>8</td><td><strong>指紋</strong>③Matching + Ratio Test</td><td>20 min</td></tr>
+          <tr><td>9</td><td><strong>指紋</strong>④RANSAC + Homography 過濾錯配</td><td>25 min</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="files">
+        <h2>教材檔案</h2>
+        <ul class="file-list">
+          <li>
+            <a href="W6-W8_full.pptx" target="_blank">📂 W6-W8_full.pptx (原始檔)</a>
+            <span class="tag">核心投影片</span><br>
+            287 張合併 deck,本週走前 190 頁(結構 + 指紋)。
+            <span class="muted">※ PPT 待轉 PDF 後可線上檢視</span>
+          </li>
+          <li>
+            <a href="../W6 Android Chaquopy 環境/Android Chaquopy + OpenCV Python + CameraX講義 .docx" target="_blank">
+              📂 Android Chaquopy 講義 .docx
+            </a>
+            <span class="tag secondary">前週講義延用</span><br>
+            本週實作仍用 Ch.0-9 的框架,Python OpenCV 程式碼包進去跑。
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" id="structure">
+        <h2>「結構」四模組(前半週)</h2>
+
+        <div class="grid">
+          <div class="card soft">
+            <h3>① 邊緣偵測 (Edge Detection)</h3>
+            <ul>
+              <li>差分起手式:前向/後向/中心差分</li>
+              <li>一階導數:Sobel / Prewitt</li>
+              <li>二階導數:Laplacian / LoG</li>
+              <li>頻率域對偶觀點:DFT</li>
+              <li><strong>Canny 五步驟</strong>:高斯模糊 → 梯度 → 非極大值抑制 → 雙閾值 → 連接</li>
+              <li><code>cv2.Canny(img, low, high)</code></li>
+            </ul>
+          </div>
+
+          <div class="card soft">
+            <h3>② Hough Transform</h3>
+            <ul>
+              <li>為什麼用 Accumulator 投票機制</li>
+              <li>直線 <code>HoughLines</code> / <code>HoughLinesP</code></li>
+              <li>圓形 <code>HoughCircles</code></li>
+              <li>從邊緣圖找幾何形狀的經典方法</li>
+            </ul>
+          </div>
+
+          <div class="card soft">
+            <h3>③ 形態學處理</h3>
+            <ul>
+              <li>Erosion 侵蝕(縮小白區)</li>
+              <li>Dilation 膨脹(擴大白區)</li>
+              <li>Opening = erode → dilate(去雜訊)</li>
+              <li>Closing = dilate → erode(填洞)</li>
+              <li>集合論定義 + OpenCV <code>morphologyEx</code></li>
+              <li><strong>W9 RPS 膚色 mask 會用到</strong></li>
+            </ul>
+          </div>
+
+          <div class="card soft">
+            <h3>④ 輪廓 + 形狀特徵</h3>
+            <ul>
+              <li>CCL (Connected Component Labeling)</li>
+              <li><code>cv2.findContours</code> + <code>contourArea</code></li>
+              <li>形狀度量:面積 / 周長 / 緊密度 / 圓度量 / Aspect Ratio</li>
+              <li><code>cv2.convexHull</code> / <code>convexityDefects</code> (W9 凸缺陷會用)</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="fingerprint">
+        <h2>「指紋」四模組(後半週)</h2>
+
+        <div class="grid">
+          <div class="card soft">
+            <h3>① 角點偵測</h3>
+            <ul>
+              <li><strong>Harris</strong>:自相關矩陣 + R 函數</li>
+              <li><strong>FAST</strong>:周圍 16 點判斷</li>
+              <li>差別:Harris 數學嚴謹但慢,FAST 啟發式但快</li>
+            </ul>
+          </div>
+
+          <div class="card soft">
+            <h3>② SIFT + ORB</h3>
+            <ul>
+              <li><strong>SIFT 四階段</strong>:DoG → 精化 → 方向 → 描述</li>
+              <li>尺度不變 + 旋轉不變</li>
+              <li><strong>ORB</strong> (FAST + BRIEF):嵌入式王牌,免費、快</li>
+              <li><code>cv2.ORB_create</code> 即可用</li>
+            </ul>
+          </div>
+
+          <div class="card soft">
+            <h3>③ Matching</h3>
+            <ul>
+              <li>Brute Force <code>cv2.BFMatcher</code></li>
+              <li>FLANN(大量特徵用)</li>
+              <li><strong>Ratio Test</strong>:Lowe 1999 經典過濾錯配</li>
+              <li><code>m.distance &lt; 0.75 * n.distance</code></li>
+            </ul>
+          </div>
+
+          <div class="card soft">
+            <h3>④ RANSAC + Homography</h3>
+            <ul>
+              <li>用隨機抽樣 + 共識數,剔除離群點</li>
+              <li><code>cv2.findHomography(src, dst, cv2.RANSAC)</code></li>
+              <li>連 W4 學過的 Homography 與本週特徵點 — 圖片拼接、AR 標記辨識的基礎</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="workflow">
+        <h2>本週實作:把古典 CV 跑在 Android 上</h2>
+        <p>W6 的 Chaquopy 框架繼續用,只是 Python 端的演算法升級到本週工具。<strong>沒有新作業</strong>,但鼓勵把本週每個工具都在 Android 試一遍(把 W6 作業 App 改造)。</p>
+
+        <div class="info">
+          <strong>實作節奏建議</strong>:
+          <ol>
+            <li>選一個你 W6 完成的 App</li>
+            <li>把 <code>process_image</code> 函式換成本週工具(例如 Canny、Hough、形態學任挑兩個)</li>
+            <li>build + run,看 Android 上的處理結果</li>
+            <li>記錄 FPS:Chaquopy 上 Python OpenCV 在中低階手機通常 5-10 FPS</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section" id="checklist">
+        <h2>學生檢核表</h2>
+        <ul class="checklist">
+          <li>我能說出 Canny 五個步驟與設計理由</li>
+          <li>我理解 Hough 為什麼要用 Accumulator 投票</li>
+          <li>我能用 erosion / dilation / opening / closing 解決雜訊問題</li>
+          <li>我能用 <code>findContours</code> 抽出形狀並算面積</li>
+          <li>我能說明 SIFT vs ORB 的差別</li>
+          <li>我理解 RANSAC 為什麼比直接最小平方更穩</li>
+          <li>本週至少把一個 Android App 改用古典 CV 工具跑通</li>
+        </ul>
+      </section>
+
+      <section class="section" id="next">
+        <h2>下週預告 (W8)</h2>
+        <p>W8 是<strong>期末方向報告週</strong>——學生主導,每組 5-10 分鐘簡報自選題目 + 老師現場給建議。<br>本週古典工具學完後,你會有概念:<strong>哪些題目用古典 CV 就行</strong>(穩、快、不需訓練資料),<strong>哪些題目要等 W9-W13 的 AI 工具</strong>。期末方向可以以此判斷。</p>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="../W6 Android Chaquopy 環境/本週教學指引.html">← W6</a>
+        <a class="btn primary" href="../W8 期末方向報告/本週教學指引.html">W8 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

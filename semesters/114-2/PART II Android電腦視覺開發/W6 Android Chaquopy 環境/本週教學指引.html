@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W6 Android Chaquopy 環境 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">Part II Android 電腦視覺開發</a> /
+      W6 Android Chaquopy 環境
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+      <a class="btn primary" href="../../作業與評量/W6_Android_OpenCV/index.html">開始 W6 作業</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">Week 6 · Part II Android 電腦視覺開發 · Android 起點</p>
+    <h1>W6 Android Chaquopy 環境建置</h1>
+    <p>從 Colab 純 Python 走出來,把影像處理搬到 Android 手機。本週密集走完 Chaquopy 講義 Ch.0–Ch.9:Android Studio 安裝 → Chaquopy 設定 → Python 函式呼叫 → 圖片讀取 → OpenCV 處理 → View 顯示。<strong>整週只有一個目標:Python OpenCV 第一張圖出現在 Android 手機螢幕上</strong>。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#schedule">本週要做的事</a>
+      <a href="#files">教材檔案</a>
+      <a href="#chapters">講義 Ch.0–9 大綱</a>
+      <a href="#tool-choice">為什麼選 Chaquopy</a>
+      <a href="#assignment">W6 作業</a>
+      <a href="#checklist">學生檢核</a>
+      <a href="#next">下週預告</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="schedule">
+        <h2>本週要做的事</h2>
+        <p class="muted">講義 14 章內容密集。<strong>W6 跑 Ch.0–9</strong>,Ch.10–13 (CameraX) 留到 W9。</p>
+        <table>
+          <tr><th>順序</th><th>內容</th><th>預估時間</th></tr>
+          <tr><td>1</td><td>Ch.0–1 為什麼選 Android + Chaquopy(課程定位)</td><td>15 min</td></tr>
+          <tr><td>2</td><td>Ch.2–3 Chaquopy 運作機制 + Android Studio 環境設定</td><td>40 min</td></tr>
+          <tr><td>3</td><td>Ch.4 Hello Android + Python — 第一個函式呼叫</td><td>20 min</td></tr>
+          <tr><td>4</td><td>Ch.5 Java 與 Python 的資料傳遞(數字、字串、byte[])</td><td>25 min</td></tr>
+          <tr><td>5</td><td>Ch.6 Python 套件與 NumPy 基本使用</td><td>15 min</td></tr>
+          <tr><td>6</td><td>Ch.7 Android 讀取圖片並交給 Python</td><td>20 min</td></tr>
+          <tr><td>7</td><td>Ch.8 OpenCV Python 在 Android 上處理圖片</td><td>30 min</td></tr>
+          <tr><td>8</td><td>Ch.9 Android View 與圖片顯示介面設計</td><td>20 min</td></tr>
+          <tr><td>9</td><td>動手:完成 Ch.8 練習(灰階化 / 二值化)</td><td>15 min</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="files">
+        <h2>教材檔案</h2>
+        <ul class="file-list">
+          <li>
+            <a href="Android Chaquopy + OpenCV Python + CameraX講義 .docx" target="_blank">
+              📂 Android Chaquopy + OpenCV Python + CameraX 講義 .docx
+            </a>
+            <span class="tag">核心講義</span><br>
+            完整 14 章。本週走 Ch.0-9,W9 起接 Ch.10-13 CameraX。
+          </li>
+          <li>
+            <a href="../../shared/pdf-viewer.html?file=../PART%20II%20Android%E9%9B%BB%E8%85%A6%E8%A6%96%E8%A6%BA%E9%96%8B%E7%99%BC/W6%20Android%20Chaquopy%20%E7%92%B0%E5%A2%83/camerax_chaquopy_tutorial.pdf" target="_blank">
+              📖 camerax_chaquopy_tutorial.pdf
+            </a>
+            <span class="tag secondary">補充 PDF</span><br>
+            CameraX + Chaquopy 流程速查,9 頁。W9 起會頻繁回來看。
+          </li>
+          <li>
+            <a href="Android 電腦視覺環境建置 .txt" target="_blank">📄 Android 電腦視覺環境建置</a>
+            <span class="tag secondary">入門連結整理</span><br>
+            Android Studio 安裝 + Chaquopy 設定的 YouTube 教學連結。
+          </li>
+          <li>
+            <a href="Android Git版本管理.txt" target="_blank">📄 Android Git 版本管理</a>
+            <span class="tag secondary">版本控制</span><br>
+            為什麼版本控制 + Android Studio 上傳 GitHub 流程。
+          </li>
+          <li>
+            <a href="../../作業與評量/W6_Android_OpenCV/index.html">W6 作業說明</a>
+            <span class="tag warn">作業</span><br>
+            完成 Ch.8 練習:Android 模擬器或手機讀圖 + Python OpenCV 處理 + 顯示。
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" id="chapters">
+        <h2>講義 Ch.0–9 重點</h2>
+
+        <div class="card">
+          <h3>Ch.0–1 ｜ 課程定位</h3>
+          <ul>
+            <li>為什麼用 Android (普及、設備多、學生熟悉) 而不是 Raspberry Pi / Jetson</li>
+            <li>Chaquopy 是 Android 與 Python 之間的橋樑,讓 Java 可以呼叫 Python 函式</li>
+            <li>Android 模擬器可輔助教學,但實機才能完整測試硬體</li>
+            <li>循序漸進:先 hello() → 資料傳遞 → NumPy → OpenCV → View,最後才接 CameraX (W9)</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Ch.2–3 ｜ Chaquopy 運作機制 + 環境設定</h3>
+          <ul>
+            <li>Gradle 怎麼打包 Python 套件進 APK</li>
+            <li>Android Studio 安裝、新專案建立、Chaquopy plugin 安裝</li>
+            <li><code>build.gradle</code> 設定 <code>python.pip</code> 安裝套件</li>
+            <li>ABI filter 設 <code>arm64-v8a</code> + <code>x86_64</code> (模擬器 + 實機都跑)</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Ch.4 ｜ Hello Android + Python</h3>
+          <ul>
+            <li>第一個 <code>main.py</code> 函式 <code>hello()</code></li>
+            <li>Java <code>PyObject result = Python.getInstance().getModule("main").callAttr("hello")</code></li>
+            <li>把結果顯示到 TextView</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Ch.5 ｜ Java ↔ Python 資料傳遞</h3>
+          <ul>
+            <li>傳數字 (Integer / Long / Float)</li>
+            <li>傳字串</li>
+            <li>傳 <code>byte[]</code> — 影像處理的關鍵 (W7 W9 一直用到)</li>
+            <li>Python 端用 <code>bytes()</code> 接收</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Ch.6 ｜ Python 套件與 NumPy</h3>
+          <p><code>build.gradle</code> 加 <code>install "numpy"</code>。Python 端 <code>import numpy as np</code> 即用。</p>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Ch.7 ｜ Android 讀圖傳給 Python</h3>
+          <ul>
+            <li>Android assets 或 SD card 讀圖檔</li>
+            <li><code>Bitmap → byte[]</code></li>
+            <li>Python 接 byte[] → <code>np.frombuffer</code> → 矩陣</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Ch.8 ｜ OpenCV Python 在 Android 上 ⭐ 本週重點</h3>
+          <ul>
+            <li><code>install "opencv-python"</code> (Chaquopy 第一次 build 5-10 分鐘)</li>
+            <li>Python 端 <code>import cv2</code></li>
+            <li>跑灰階化、二值化、邊緣偵測等 W3 學過的工具</li>
+            <li>結果 <code>cv2.imencode</code> 變 JPEG byte[] 回傳 Java</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Ch.9 ｜ Android View 與圖片顯示</h3>
+          <ul>
+            <li><code>BitmapFactory.decodeByteArray</code> 把 Python 回傳的 JPEG byte[] 變回 Bitmap</li>
+            <li>ImageView 顯示</li>
+            <li>UI Thread 與背景執行緒分工</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="tool-choice">
+        <h2>為什麼選 Chaquopy(教學上的折衷)</h2>
+        <p>Chaquopy <strong>不是效能最佳解</strong>。要做正式商業等級高 FPS、低延遲 App,通常會選:</p>
+        <ul>
+          <li>Java / Kotlin + OpenCV Android SDK</li>
+          <li>TensorFlow Lite</li>
+          <li>MediaPipe</li>
+          <li>ONNX Runtime Mobile</li>
+        </ul>
+        <p>但本課程<strong>教學目標是「理解完整流程」</strong>,不是極致效能。學生先用熟悉的 Python 跑通完整管線,後續要改 SDK 就有方向。<strong>W11 YOLO 之後就會走 Java TFLite</strong>,把效能補上。</p>
+      </section>
+
+      <section class="section" id="assignment">
+        <h2>W6 作業 ｜ Android Python OpenCV 練習</h2>
+
+        <h3>作業目標</h3>
+        <p>完成 Chaquopy 講義 Ch.8 的練習,在 Android 模擬器或實機上跑通:Python OpenCV 讀圖、處理、顯示完整流程。</p>
+
+        <h3>作業內容</h3>
+        <p>執行完成第 8 章,確認可在 Android 模擬器(或手機)上完成:</p>
+        <ol class="flow">
+          <li>可讀圖</li>
+          <li>可透過 Python OpenCV 處理圖片(例如灰階化)</li>
+          <li>可顯示處理後的圖片</li>
+        </ol>
+
+        <h3>繳交內容</h3>
+        <p>Android 模擬器或手機<strong>畫面截圖</strong>(處理後的圖出現在畫面上)。</p>
+
+        <p><a class="btn primary" href="../../作業與評量/W6_Android_OpenCV/index.html">查看完整作業頁 →</a></p>
+      </section>
+
+      <section class="section" id="checklist">
+        <h2>學生檢核表</h2>
+        <ul class="checklist">
+          <li>Android Studio 已裝,可開新專案 + build APK</li>
+          <li>Chaquopy plugin 正常運作,Java 可呼叫 Python <code>hello()</code></li>
+          <li>能傳 byte[] 給 Python,Python 端用 NumPy 處理</li>
+          <li>能在 Android 上跑 Python OpenCV(灰階化)</li>
+          <li>處理結果顯示在 ImageView</li>
+          <li>用 Git 把專案備份到 GitHub</li>
+        </ul>
+      </section>
+
+      <section class="section" id="next">
+        <h2>下週預告 (W7)</h2>
+        <p>W6 學了「<strong>怎麼在 Android 上跑 Python OpenCV</strong>」。下週把 W3-W5 學過的工具搬到 Android,加上<strong>古典特徵抽取</strong>三部曲的第一棒:</p>
+        <ul>
+          <li>邊緣偵測(Sobel / Laplacian / Canny)</li>
+          <li>Hough Transform(直線/圓形)</li>
+          <li>形態學(erosion/dilation/opening/closing)</li>
+          <li>輪廓抽取與形狀分析</li>
+        </ul>
+        <p>用的還是 Chaquopy 框架,只是 Python 端的演算法升級。</p>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="../../PART I 影像處理基礎/W5 色彩處理/本週教學指引.html">← W5</a>
+        <a class="btn primary" href="../W7 古典 CV 在 Android/本週教學指引.html">W7 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

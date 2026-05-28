@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W15 期末專題報告 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">Part III AI 電腦視覺技術</a> /
+      W15 期末專題報告
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+      <a class="btn primary" href="../../作業與評量/期末專題/index.html">期末專題詳細說明</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">Week 15 · Part III · 學期收官</p>
+    <h1>W15 期末專題報告(三件套繳交)</h1>
+    <p>整個學期最終戰。從 W8 提出方向 → W9-W13 學工具 → 期末做 demo。本週每組現場呈現:<strong>程式碼 + 報告 + Demo 影片</strong>。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#schedule">本週流程</a>
+      <a href="#deliverables">三件套</a>
+      <a href="#rubric">評分標準</a>
+      <a href="#tips">給學生的最後建議</a>
+      <a href="#wrap">結束課程</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="schedule">
+        <h2>本週流程(3 小時)</h2>
+        <table>
+          <tr><th>時段</th><th>活動</th></tr>
+          <tr><td>0-15 分鐘</td><td>說明流程 + 報告順序抽籤</td></tr>
+          <tr><td>15-165 分鐘</td><td>每組 8-10 分鐘 demo + 5 分鐘 Q&A(依組數調整)</td></tr>
+          <tr><td>165-175 分鐘</td><td>老師講評 + 給每組亮點與可改進處</td></tr>
+          <tr><td>175-180 分鐘</td><td>結業致詞 + 學期總結</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="deliverables">
+        <h2>期末三件套</h2>
+
+        <div class="card">
+          <h3>① 程式碼(GitHub repo)</h3>
+          <ul>
+            <li>完整 Android 專案(可重現 build)</li>
+            <li>README 含 build 指令、相依套件、模型權重位置</li>
+            <li>有訓練 notebook 的話一併放</li>
+            <li>授權聲明(預設 MIT)</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>② 研究報告(PDF, 10-15 頁)</h3>
+          <p>每個段落必有,可長可短:</p>
+          <ul>
+            <li><strong>Abstract</strong> — 一段話講完問題與結果</li>
+            <li><strong>Introduction</strong> — 為什麼這個題目重要</li>
+            <li><strong>Method</strong> — 你的演算法 / 模型架構</li>
+            <li><strong>Experiments</strong> — 資料集、訓練設定</li>
+            <li><strong>Results</strong> — 數據表 + 視覺化 + Confusion Matrix / mAP</li>
+            <li><strong>Discussion</strong> — 結果意義 + 跟 baseline 比較</li>
+            <li><strong>Limitations</strong> — 你的方法在什麼情境會失敗</li>
+            <li><strong>Future Work</strong> — 如果你有更多時間 / 資料 / 算力會怎麼做</li>
+          </ul>
+          <div class="info" style="margin-top:10px;">
+            <strong>研究級門檻</strong>:至少 1 張 Confusion Matrix / mAP 曲線 / 延遲對照表;至少 1 個 baseline 對比。
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>③ Demo 影片(30-90 秒)</h3>
+          <ul>
+            <li>手機錄屏 + 旁白</li>
+            <li>展示 App 主要功能</li>
+            <li><strong>含失敗 case 展示</strong>(誠實面對你的演算法限制)</li>
+            <li>影片末尾顯示 GitHub repo 連結</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="rubric">
+        <h2>評分標準(占學期 20%)</h2>
+        <table>
+          <tr><th>維度</th><th>比重</th><th>看什麼</th></tr>
+          <tr><td>技術深度</td><td>30%</td><td>用到的方法是否合理、有挑戰性</td></tr>
+          <tr><td>實驗嚴謹</td><td>30%</td><td>是否有 test set、定量指標、baseline 對比</td></tr>
+          <tr><td>創意與應用</td><td>20%</td><td>是否解決真實問題、有差異化</td></tr>
+          <tr><td>報告品質</td><td>10%</td><td>PDF 報告含 spec、limitations、future work</td></tr>
+          <tr><td>Demo 完整度</td><td>10%</td><td>30-90 秒影片清楚示範、GitHub 可重現</td></tr>
+        </table>
+        <div class="info" style="margin-top:14px;">
+          <strong>研究方法是評分骨幹</strong>:不只看「跑得通」,更看「跑得有道理」。confusion matrix、baseline 對比、limitation 分析,缺一不可拿高分。
+        </div>
+      </section>
+
+      <section class="section" id="tips">
+        <h2>給學生的最後建議</h2>
+        <ul>
+          <li><strong>誠實面對 limitations</strong>:寫出哪些情境會失敗,比假裝完美更專業</li>
+          <li><strong>表格 + 圖優於文字</strong>:報告 1 張好圖勝過 1000 字</li>
+          <li><strong>Demo 影片少話多畫面</strong>:30 秒讓人看到你做了什麼</li>
+          <li><strong>GitHub repo 寫好 README</strong>:讓老師可以一次跑通</li>
+          <li><strong>不要解釋為什麼沒做</strong>:把時間花在做了什麼上</li>
+          <li><strong>對自己作品 proud</strong>:你已經跑完整門課,值得驕傲</li>
+        </ul>
+      </section>
+
+      <section class="section" id="wrap">
+        <h2>結束課程</h2>
+        <p>從 W1 第一次掛載 Drive、到 W15 demo 自己的 App,你完成了:</p>
+        <ul>
+          <li>影像物理基礎(W1-W5)</li>
+          <li>古典特徵抽取(W6-W7)</li>
+          <li>嵌入式 Android 開發(W6+)</li>
+          <li>五種範式做 RPS(W9-W13)</li>
+          <li>CV 研究地圖(W14)</li>
+          <li>一個你自己的期末專題</li>
+        </ul>
+        <p>這套訓練是<strong>研究生階段最值得的投資之一</strong>。期待看到你在 CVPR 投 paper / 開公司 / 為世界做點什麼。</p>
+        <p style="text-align:center; margin-top:24px; font-size:18px;">— 學期結束 —</p>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="../W14 CV 研究地圖/本週教學指引.html">← W14</a>
+        <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

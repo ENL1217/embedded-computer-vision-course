@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W12 MediaPipe 骨架 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">Part III AI 電腦視覺技術</a> /
+      W12 MediaPipe 骨架
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+      <a class="btn primary" href="../../作業與評量/W12_MediaPipe/index.html">開始 W12 作業</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">Week 12 · Part III · 五範式 RPS 第四棒</p>
+    <h1>W12 MediaPipe Hands 骨架偵測</h1>
+    <p>第四種範式:不訓練模型,直接用 Google MediaPipe 的「<strong>21 點 landmark</strong>」抓手部骨架。用彎曲度算法做 RPS,還能延伸到 Action Recognition(動態手勢)。W11 是 SOTA 物件偵測,本週是 SOTA 骨架點偵測 — <strong>不同任務,不同範式</strong>。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#schedule">本週要做的事</a>
+      <a href="#files">教材檔案</a>
+      <a href="#vs-yolo">MediaPipe vs YOLO</a>
+      <a href="#architecture">內部架構</a>
+      <a href="#landmark">21 點 landmark</a>
+      <a href="#action">Action Recognition</a>
+      <a href="#deployment">Android Tasks API</a>
+      <a href="#assignment">W12 作業</a>
+      <a href="#checklist">學生檢核</a>
+      <a href="#next">下週預告</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="schedule">
+        <h2>本週要做的事</h2>
+        <table>
+          <tr><th>順序</th><th>內容</th><th>預估時間</th></tr>
+          <tr><td>1</td><td>Ch.1 課程定位:MediaPipe vs YOLO 分工</td><td>10 min</td></tr>
+          <tr><td>2</td><td>Ch.2 MediaPipe 概論 + Solutions 全景</td><td>15 min</td></tr>
+          <tr><td>3</td><td>Ch.3 MediaPipe Hands 內部架構(palm detector + landmark estimator)</td><td>20 min</td></tr>
+          <tr><td>4</td><td>Ch.4 Python 端使用 + 21 點 landmark 解析</td><td>30 min</td></tr>
+          <tr><td>5</td><td>Ch.5 手部 RPS 邏輯(彎曲度算法)</td><td>25 min</td></tr>
+          <tr><td>6</td><td>Ch.6 Action Recognition — 從靜態到動態</td><td>25 min</td></tr>
+          <tr><td>7</td><td>Ch.7 <strong>Android Java MediaPipe Tasks API</strong> 部署</td><td>30 min</td></tr>
+          <tr><td>8</td><td>Ch.8 Custom Solutions (Model Maker) + 期末專題建議</td><td>15 min</td></tr>
+          <tr><td>9</td><td>Ch.9 研究級對比 + 作業</td><td>10 min</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="files">
+        <h2>教材檔案</h2>
+        <ul class="file-list">
+          <li>
+            <a href="MediaPipe_骨架.pptx" target="_blank">📂 MediaPipe_骨架.pptx (原始檔)</a>
+            <span class="tag">核心投影片</span><br>
+            68 張,9 章節。<span class="muted">※ PPT 待轉 PDF 後可線上檢視</span>
+          </li>
+          <li>
+            <a href="MediaPipe參考資料.html" target="_blank">📖 MediaPipe 參考資料</a>
+            <span class="tag secondary">補充連結</span><br>
+            官方文件、Tasks API、Model Maker 入門連結整理。
+          </li>
+          <li>共用 notebook (<code>shared/notebooks/</code>):
+            <ul>
+              <li><code>mediapipe_body_skeleton.ipynb</code> — 全身骨架 demo</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" id="vs-yolo">
+        <h2>MediaPipe vs YOLO 分工</h2>
+        <p>同樣都是「在影像上找東西」,但<strong>不同抽象層級</strong>:</p>
+        <table>
+          <tr><th></th><th>YOLO (W11)</th><th>MediaPipe (W12)</th></tr>
+          <tr><td>輸出</td><td>bbox + class</td><td>骨架點 (21 點 / 33 點)</td></tr>
+          <tr><td>適用</td><td>萬用偵測(任何物件)</td><td>人類專用(手/身體/臉)</td></tr>
+          <tr><td>訓練</td><td>要自訓</td><td>Google 預訓練,直接用</td></tr>
+          <tr><td>RPS</td><td>框出手 + 分類 rock/scissors/paper</td><td>抓 landmark + 算彎曲度</td></tr>
+          <tr><td>細節</td><td>整隻手是一個框</td><td>每根手指都看得到</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="architecture">
+        <h2>MediaPipe Hands 內部架構(兩階段)</h2>
+        <p>跟單階段 YOLO 不同,MediaPipe Hands 是經典<strong>兩階段流程</strong>:</p>
+        <div class="grid">
+          <div class="card soft">
+            <h3>階段一:Palm Detector</h3>
+            <ul>
+              <li>輕量 detection 模型</li>
+              <li>找出手掌位置 (bounding box)</li>
+              <li>每幀都跑(或追蹤模式時隔幾幀跑)</li>
+            </ul>
+          </div>
+          <div class="card soft">
+            <h3>階段二:Hand Landmark</h3>
+            <ul>
+              <li>用 palm bbox 裁切出手部 ROI</li>
+              <li>跑專門模型回歸 <strong>21 個 landmark</strong></li>
+              <li>含 (x, y, z) — z 是相對深度</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="landmark">
+        <h2>21 點 landmark 與 RPS 彎曲度算法</h2>
+        <p>每隻手 21 點,從手腕到指尖。指縫分布:</p>
+        <div class="pipeline">
+   0 = 手腕
+   1-4   = 大拇指
+   5-8   = 食指
+   9-12  = 中指
+  13-16  = 無名指
+  17-20  = 小指</div>
+
+        <h3>RPS 彎曲度算法</h3>
+        <p>每根手指看「<strong>掌根→第一節→指尖</strong>」三點是否大致共線:</p>
+        <ul>
+          <li>共線 → 該手指<strong>伸直</strong></li>
+          <li>明顯彎折 → 該手指<strong>彎曲</strong></li>
+        </ul>
+        <p>判斷規則:</p>
+        <ul>
+          <li>0 根手指伸直 → <strong>石頭</strong></li>
+          <li>2 根手指伸直(食指+中指)→ <strong>剪刀</strong></li>
+          <li>5 根手指伸直 → <strong>布</strong></li>
+        </ul>
+        <div class="info">
+          <strong>對比 W9 凸缺陷法</strong>:W9 看「指縫深度與角度」靠形態學,W12 直接拿到 landmark 算彎曲度。<strong>本質不同 — landmark 已經是「結構化資訊」,W9 還在「像素層」</strong>。
+        </div>
+      </section>
+
+      <section class="section" id="action">
+        <h2>Action Recognition:從靜態到動態</h2>
+        <p>RPS 是靜態手勢。MediaPipe + Sequence Model 可以處理動態手勢(揮手、招手、特定動作):</p>
+        <ul>
+          <li>連續 N 幀 landmark 序列 (shape: (N, 21, 3))</li>
+          <li>用 LSTM / Transformer / 1D CNN 分類</li>
+          <li>應用:手語識別、無接觸控制、運動姿勢評估</li>
+        </ul>
+        <p class="muted">期末專題可朝這方向延伸。</p>
+      </section>
+
+      <section class="section" id="deployment">
+        <h2>Android Tasks API 部署</h2>
+        <p>MediaPipe 在 Android 有專門 SDK <strong>Tasks API</strong>(不走 Chaquopy,不走 TFLite,有自己 wrapper):</p>
+<pre><code>// build.gradle
+implementation 'com.google.mediapipe:tasks-vision:0.10.x'</code></pre>
+<pre><code>// Java
+HandLandmarker landmarker = HandLandmarker.createFromOptions(...);
+HandLandmarkerResult result = landmarker.detect(mpImage);
+List&lt;NormalizedLandmark&gt; hand = result.landmarks().get(0);</code></pre>
+        <p>輸出直接是 landmark 結構,Java 端跑彎曲度算法 → 輸出 RPS。</p>
+      </section>
+
+      <section class="section" id="assignment">
+        <h2>W12 作業</h2>
+        <p>MediaPipe RPS + Action Recognition demo。<strong>詳見作業頁</strong>。</p>
+        <ul>
+          <li>用 MediaPipe Hands 在 Android 即時抓 landmark</li>
+          <li>實作彎曲度算法判斷 RPS</li>
+          <li>(進階) 加 Action Recognition 識別一個動態手勢</li>
+          <li>跟 W9/W10/W11 比較(正確率 + FPS)</li>
+          <li>30 秒影片 + 簡易報告</li>
+        </ul>
+        <p><a class="btn primary" href="../../作業與評量/W12_MediaPipe/index.html">查看完整作業頁 →</a></p>
+      </section>
+
+      <section class="section" id="checklist">
+        <h2>學生檢核表</h2>
+        <ul class="checklist">
+          <li>我能解釋 MediaPipe 兩階段架構(palm + landmark)</li>
+          <li>我知道 21 點 landmark 的編號意義</li>
+          <li>我會用彎曲度算法判斷手指伸直 / 彎曲</li>
+          <li>我能在 Android Tasks API 上跑 MediaPipe Hands</li>
+          <li>我理解 MediaPipe Z 軸是「相對深度」不是真 3D</li>
+          <li>我能對比 W9/W10/W11/W12 四種範式的取捨</li>
+        </ul>
+      </section>
+
+      <section class="section" id="next">
+        <h2>下週預告 (W13)</h2>
+        <p>第五種範式 — <strong>ML Kit Vision API</strong>:</p>
+        <ul>
+          <li>Google 的 production-ready 工具棧</li>
+          <li>9 大 API(OCR / Barcode / Face / Pose 等)</li>
+          <li>on-device vs Cloud 取捨</li>
+          <li>Custom Image Labeling</li>
+        </ul>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="../W11 YOLO Tracking/本週教學指引.html">← W11</a>
+        <a class="btn primary" href="../W13 ML Kit Vision/本週教學指引.html">W13 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

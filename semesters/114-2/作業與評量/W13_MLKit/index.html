@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W13 作業 ｜ ML Kit Vision ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">作業與評量</a> /
+      W13 ML Kit Vision
+    </div>
+    <div class="actions">
+      <a class="btn" href="../index.html">作業總覽</a>
+      <a class="btn primary" href="../../PART III AI電腦視覺技術/W13 ML Kit Vision/本週教學指引.html">回 W13 教學指引</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">W13 作業 · Part III · 五範式收官</p>
+    <h1>ML Kit 三 API 整合 + 五方法對照</h1>
+    <p>用 Google ML Kit 的 9 大 API 任挑 3 個整合到 App,其中至少一個用於 RPS。產出 W9-W13 完整對照表,看完整個工具光譜。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#goal">一、作業目標</a>
+      <a href="#content">二、作業內容</a>
+      <a href="#bonus">三、加分項</a>
+      <a href="#submit">四、繳交內容</a>
+      <a href="#tips">五、注意事項</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="goal">
+        <h2>一、作業目標</h2>
+        <p>體驗「production-ready」工具棧的開發速度。挑 3 個 ML Kit API 整合到一個 App,其中至少 1 個用於 RPS。完成 W9-W13 五範式完整對照表。</p>
+      </section>
+
+      <section class="section" id="content">
+        <h2>二、作業內容</h2>
+
+        <h3>必做:整合 3 個 ML Kit API</h3>
+        <p>從以下 9 個任挑 3 個(至少 1 個用於 RPS 或手勢相關):</p>
+        <ul>
+          <li>Face Detection</li>
+          <li>Text Recognition (OCR)</li>
+          <li>Barcode Scanner</li>
+          <li>Image Labeling(可用 Custom 訓練自己的標籤)</li>
+          <li>Object Detection &amp; Tracking</li>
+          <li><strong>Pose Detection</strong>(33 點全身骨架,可做 RPS)</li>
+          <li>Selfie Segmentation</li>
+        </ul>
+
+        <h3>必做:五範式對照表</h3>
+        <p>完整呈現 W9-W13 對比:</p>
+        <table>
+          <tr><th>週</th><th>範式</th><th>正確率</th><th>FPS</th><th>模型大小</th><th>開發時數</th><th>適用情境</th></tr>
+          <tr><td>W9</td><td>古典規則法</td><td>?</td><td>?</td><td>0</td><td>?</td><td>?</td></tr>
+          <tr><td>W10</td><td>HoG+SVM</td><td>?</td><td>?</td><td>?</td><td>?</td><td>?</td></tr>
+          <tr><td>W10</td><td>MobileNetV2</td><td>?</td><td>?</td><td>?</td><td>?</td><td>?</td></tr>
+          <tr><td>W11</td><td>YOLO</td><td>?</td><td>?</td><td>?</td><td>?</td><td>?</td></tr>
+          <tr><td>W12</td><td>MediaPipe</td><td>?</td><td>?</td><td>?</td><td>?</td><td>?</td></tr>
+          <tr><td>W13</td><td>ML Kit</td><td>?</td><td>?</td><td>?</td><td>?</td><td>?</td></tr>
+        </table>
+        <p class="muted">表格的「適用情境」要根據你的觀察寫:哪種情境該用哪種工具。</p>
+      </section>
+
+      <section class="section" id="bonus">
+        <h2>三、加分項</h2>
+        <ul>
+          <li><strong>(+2)</strong> Custom Image Labeling:訓練自己的 RPS 標籤</li>
+          <li><strong>(+2)</strong> 比較 on-device vs Cloud(同一 API 跑兩種模式測延遲)</li>
+          <li><strong>(+3)</strong> 用 ML Kit + 你前面學過的方法(例如 ML Kit Pose + W12 彎曲度)做更穩 RPS</li>
+        </ul>
+      </section>
+
+      <section class="section" id="submit">
+        <h2>四、繳交內容</h2>
+        <ul class="checklist">
+          <li><strong>30 秒測試影片</strong>:展示 3 個 ML Kit API 的功能</li>
+          <li><strong>簡易報告</strong>:含五範式完整對照表 + 對「選工具」的觀察</li>
+          <li>Android 專案(GitHub repo)</li>
+        </ul>
+      </section>
+
+      <section class="section" id="tips">
+        <h2>五、注意事項</h2>
+        <ul>
+          <li>ML Kit 是 production-ready 但<strong>不適合所有任務</strong>:它的 Image Labeling 是通用的,RPS 需要 Custom 才行</li>
+          <li>Pose Detection 33 點 vs MediaPipe Hands 21 點 — 一個全身、一個專手</li>
+          <li>on-device 預設免費,Cloud 要 Firebase + 計費</li>
+          <li>App size 會被 ML Kit 模型撐大,可以用「需要時下載」模式</li>
+        </ul>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="#top">回到本頁頂端</a>
+        <a class="btn primary" href="../../PART III AI電腦視覺技術/W13 ML Kit Vision/本週教學指引.html">回 W13 教學指引</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W13 ML Kit Vision ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">Part III AI 電腦視覺技術</a> /
+      W13 ML Kit Vision
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+      <a class="btn primary" href="../../作業與評量/W13_MLKit/index.html">開始 W13 作業</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">Week 13 · Part III · 五範式 RPS 第五棒(收官)</p>
+    <h1>W13 ML Kit Vision API(拿來就用的 Google 工具棧)</h1>
+    <p>五範式最後一棒:Google <strong>ML Kit</strong>——production-ready 的 9 大 Vision API。從研究級工具(YOLO / MediaPipe)轉到生產級工具(ML Kit),學生看完整個光譜:<strong>從手刻演算法(W9)→ 自訓模型(W10/W11)→ 框架輔助(W12)→ 平台預設(W13)</strong>。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#schedule">本週要做的事</a>
+      <a href="#files">教材檔案</a>
+      <a href="#nine-api">ML Kit 9 大 API</a>
+      <a href="#on-device">on-device vs Cloud</a>
+      <a href="#five-compare">五範式對比表</a>
+      <a href="#assignment">W13 作業</a>
+      <a href="#checklist">學生檢核</a>
+      <a href="#next">下週預告</a>
+    </aside>
+
+    <main>
+
+      <section class="section" id="schedule">
+        <h2>本週要做的事</h2>
+        <table>
+          <tr><th>順序</th><th>內容</th><th>預估時間</th></tr>
+          <tr><td>1</td><td>Ch.1 課程定位:ML Kit 在生產線的角色</td><td>10 min</td></tr>
+          <tr><td>2</td><td>Ch.2 ML Kit Vision 全景:9 大 API</td><td>20 min</td></tr>
+          <tr><td>3</td><td>Ch.3 Face Detection 實作</td><td>15 min</td></tr>
+          <tr><td>4</td><td>Ch.4 Text Recognition (OCR) 實作</td><td>20 min</td></tr>
+          <tr><td>5</td><td>Ch.5 Barcode / QR Code Scanner</td><td>10 min</td></tr>
+          <tr><td>6</td><td>Ch.6 Image Labeling 通用標籤</td><td>15 min</td></tr>
+          <tr><td>7</td><td>Ch.7 Object Detection &amp; Tracking</td><td>20 min</td></tr>
+          <tr><td>8</td><td>Ch.8 Pose Detection(33 點)</td><td>15 min</td></tr>
+          <tr><td>9</td><td>Ch.9 on-device vs Cloud trade-off</td><td>15 min</td></tr>
+          <tr><td>10</td><td>Ch.10 RPS with ML Kit + <strong>五方法對比</strong></td><td>25 min</td></tr>
+          <tr><td>11</td><td>Ch.11 研究級對比 + 作業 + W14 預告</td><td>10 min</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="files">
+        <h2>教材檔案</h2>
+        <ul class="file-list">
+          <li>
+            <a href="W13_MLKit_Vision.pptx" target="_blank">📂 W13_MLKit_Vision.pptx (原始檔)</a>
+            <span class="tag">核心投影片</span><br>
+            61 張,11 章節。<span class="muted">※ PPT 待轉 PDF 後可線上檢視</span>
+          </li>
+          <li>
+            <a href="https://developers.google.com/ml-kit" target="_blank">🌐 ML Kit 官方文件</a>
+            <span class="tag secondary">外部連結</span><br>
+            Google 官方 API 文件、code lab、範例專案。
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" id="nine-api">
+        <h2>ML Kit Vision 9 大 API</h2>
+        <div class="grid">
+          <div class="card soft">
+            <h3>👁 Face Detection</h3>
+            <p>臉部偵測 + landmark + 表情(笑、眨眼)</p>
+          </div>
+          <div class="card soft">
+            <h3>📝 Text Recognition (OCR)</h3>
+            <p>多國語言文字辨識 + 區塊結構</p>
+          </div>
+          <div class="card soft">
+            <h3>📊 Barcode Scanner</h3>
+            <p>QR code、EAN、UPC 等所有條碼</p>
+          </div>
+          <div class="card soft">
+            <h3>🏷️ Image Labeling</h3>
+            <p>447 個通用標籤(可自訂 Custom)</p>
+          </div>
+          <div class="card soft">
+            <h3>📦 Object Detection</h3>
+            <p>通用物件 + Tracking</p>
+          </div>
+          <div class="card soft">
+            <h3>🧍 Pose Detection</h3>
+            <p>全身 33 點 landmark(比 MediaPipe 更多點)</p>
+          </div>
+          <div class="card soft">
+            <h3>✂️ Selfie Segmentation</h3>
+            <p>人像分割(背景虛化、換背景)</p>
+          </div>
+          <div class="card soft">
+            <h3>🔍 Smart Reply</h3>
+            <p>(非 Vision) 自動回覆建議</p>
+          </div>
+          <div class="card soft">
+            <h3>🌐 Translation</h3>
+            <p>(非 Vision) 即時翻譯,on-device</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="on-device">
+        <h2>on-device vs Cloud Trade-off</h2>
+        <p>ML Kit 部分 API 有 on-device 與 Cloud 兩種模式:</p>
+        <table>
+          <tr><th></th><th>on-device</th><th>Cloud</th></tr>
+          <tr><td>網路</td><td>不需要</td><td>需要</td></tr>
+          <tr><td>速度</td><td>毫秒級</td><td>百毫秒+ 網路延遲</td></tr>
+          <tr><td>準確率</td><td>中</td><td>較高</td></tr>
+          <tr><td>隱私</td><td>影像不離手機</td><td>影像送到 Google</td></tr>
+          <tr><td>成本</td><td>免費</td><td>API 計費</td></tr>
+          <tr><td>適用</td><td>即時互動、隱私應用</td><td>批次處理、高品質離線分析</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="five-compare">
+        <h2>五範式做 RPS 最終對比 ⭐ Part III 收官</h2>
+        <p>W9-W13 都做同一題,本週做完<strong>整套對比表</strong>:</p>
+        <table>
+          <tr><th>週</th><th>範式</th><th>正確率</th><th>FPS</th><th>模型大小</th><th>開發成本</th></tr>
+          <tr><td>W9</td><td>古典規則法 (HSV+凸缺陷)</td><td>60-80%</td><td>5-10</td><td>0</td><td>需手刻邏輯</td></tr>
+          <tr><td>W10</td><td>HoG+SVM</td><td>80-90%</td><td>15+</td><td>50 KB</td><td>需訓練資料</td></tr>
+          <tr><td>W10</td><td>MobileNetV2</td><td>92-97%</td><td>10+</td><td>9 MB</td><td>需 GPU 訓練</td></tr>
+          <tr><td>W11</td><td>YOLO + Tracking</td><td>90%+</td><td>15+</td><td>14 MB</td><td>標 bbox 資料</td></tr>
+          <tr><td>W12</td><td>MediaPipe Hands</td><td>95%+</td><td>30</td><td>免裝 (SDK)</td><td>零訓練</td></tr>
+          <tr><td>W13</td><td>ML Kit Image Labeling</td><td>視場景</td><td>30+</td><td>免裝 (SDK)</td><td>零開發(直接用)</td></tr>
+        </table>
+        <div class="info" style="margin-top:14px;">
+          <strong>學生帶走的洞察</strong>:沒有「最好的」工具,只有「對的工具」。看情境選:資源緊 → 古典 / 標榜 SOTA → YOLO / 要快 → MediaPipe / 要零開發 → ML Kit。
+        </div>
+      </section>
+
+      <section class="section" id="assignment">
+        <h2>W13 作業</h2>
+        <p>ML Kit 三 API 整合 + 五方法對照表。<strong>詳見作業頁</strong>。</p>
+        <ul>
+          <li>選 ML Kit 3 個 API 整合進一個 App</li>
+          <li>其中至少一個用於 RPS</li>
+          <li>產出 W9-W13 五範式完整對照表(含正確率 / FPS / 模型大小)</li>
+          <li>30 秒影片 + 簡易報告</li>
+        </ul>
+        <p><a class="btn primary" href="../../作業與評量/W13_MLKit/index.html">查看完整作業頁 →</a></p>
+      </section>
+
+      <section class="section" id="checklist">
+        <h2>學生檢核表</h2>
+        <ul class="checklist">
+          <li>我能列出 ML Kit Vision 9 大 API</li>
+          <li>我會用 Face Detection、OCR、Barcode 至少 3 個</li>
+          <li>我理解 on-device vs Cloud 的 5 個取捨維度</li>
+          <li>我能用 ML Kit 跑出 RPS</li>
+          <li>我能畫出 W9-W13 五範式對照表並解讀</li>
+          <li>我能對「選工具」的判斷邏輯說出個所以然</li>
+        </ul>
+      </section>
+
+      <section class="section" id="next">
+        <h2>下週預告 (W14) ⭐ 結業講</h2>
+        <p>五範式做完,W14 是<strong>結業講</strong>——從「會用工具」過渡到「能跟世界對話」:</p>
+        <ul>
+          <li>整門課回顧 + CV 領域全景</li>
+          <li>2024-2026 CV 熱門研究方向</li>
+          <li>嵌入式 CV 的研究軸線</li>
+          <li>怎麼讀 paper + 怎麼啟動研究</li>
+          <li>頂級會議與開源生態</li>
+        </ul>
+      </section>
+
+      <div class="footer-nav">
+        <a class="btn" href="../W12 MediaPipe 骨架/本週教學指引.html">← W12</a>
+        <a class="btn primary" href="../W14 CV 研究地圖/本週教學指引.html">W14 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../../shared/js/analytics.js"></script>
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>
