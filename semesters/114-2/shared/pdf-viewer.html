@@ -5,14 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>教材檢視 ｜ 嵌入式電腦視覺系統</title>
   <link rel="stylesheet" href="css/course.css">
-  <script>
-    // Library 載入狀態追蹤 (給 timeout 判斷用)
-    window._pdfLibLoaded = false;
-    window._pdfLibError = null;
-  </script>
-  <script src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"
-          onload="window._pdfLibLoaded = true;"
-          onerror="window._pdfLibError = 'unpkg CDN 連不到';"></script>
+  <!-- PDF.js library 改放本機,避免 Edge Tracking Prevention 與 CDN 不穩問題 -->
+  <script src="pdfjs/pdf.min.js"></script>
   <style>
     body { background: #1a2435; margin: 0; padding: 0; }
     .viewer-bar {
@@ -96,6 +90,7 @@
       text-align: center;
       max-width: 600px;
     }
+    .error a { color: #7dd3fc; }
     footer.viewer-footer {
       background: #132033;
       color: #b7d7d7;
@@ -136,6 +131,8 @@
   </footer>
 
   <script>
+  // 全部包進 IIFE 避免 top-level return 錯誤
+  (function () {
     const params = new URLSearchParams(location.search);
     const file = params.get('file');
     const canvas = document.getElementById('pdf-canvas');
@@ -148,133 +145,91 @@
     let isRendering = false;
     let pendingPage = null;
 
+    function showError(html) {
+      content.className = 'error';
+      content.style.display = 'block';
+      canvas.style.display = 'none';
+      content.innerHTML = html;
+    }
+
     function setStatus(text) {
       content.innerHTML = text;
     }
 
-    function showError(html) {
-      content.className = 'error';
-      content.innerHTML = html;
-    }
-
-    // 先檢查 library 載入狀況 (5 秒)
-    function waitForLibrary(retries) {
-      if (window._pdfLibError) {
-        showError('❌ PDF.js library 無法載入<br><br>' +
-                  '<code>' + window._pdfLibError + '</code><br><br>' +
-                  '可能原因:網路問題、防火牆擋 CDN、或瀏覽器離線。<br>' +
-                  '<a href="' + file + '" target="_blank" style="color:#7dd3fc;">改用瀏覽器直接開啟 PDF (Layer 1 失效)</a>');
-        return false;
-      }
-      if (typeof pdfjsLib !== 'undefined') return true;
-      if (retries <= 0) {
-        showError('❌ PDF.js library 載入逾時 (5 秒)<br><br>' +
-                  '可能原因:CDN <code>unpkg.com</code> 連不到。<br>' +
-                  '<a href="' + file + '" target="_blank" style="color:#7dd3fc;">改用瀏覽器直接開啟 PDF (Layer 1 失效)</a>');
-        return false;
-      }
-      setStatus('⏳ 等待 PDF.js library (' + retries + ')...');
-      setTimeout(() => waitForLibrary(retries - 1), 500);
-      return null; // pending
-    }
-
+    // === 入口 ===
     if (!file) {
-      content.className = 'error';
-      content.textContent = '⚠️ 沒有指定檔案 (網址缺少 ?file=... 參數)';
-    } else {
-      const filename = decodeURIComponent(file.split('/').pop());
-      document.getElementById('filename').textContent = filename;
-      document.title = filename + ' ｜ 教材檢視';
+      showError('⚠️ 沒有指定檔案 (網址缺少 ?file=... 參數)');
+      return;
+    }
 
-      // 偵測 file:// 協定 (本地開啟,PDF.js 會被 CORS 擋)
-      const isLocalFile = location.protocol === 'file:';
+    const filename = decodeURIComponent(file.split('/').pop());
+    document.getElementById('filename').textContent = filename;
+    document.title = filename + ' ｜ 教材檢視';
 
-      if (isLocalFile) {
-        // Fallback: 直接用 <embed> 開啟,雖然失去 Layer 1 但本地 dev 可看
-        document.querySelector('.viewer-controls').style.display = 'none';
-        content.style.display = 'none';
-        canvas.style.display = 'none';
-        const main = document.querySelector('main.viewer-main');
-        main.style.padding = '0';
-        const embed = document.createElement('embed');
-        embed.src = file + '#toolbar=0&navpanes=0';
-        embed.type = 'application/pdf';
-        embed.style.cssText = 'width:100%; height:calc(100vh - 110px); border:0;';
-        main.appendChild(embed);
+    // file:// 協定:用 <embed> fallback
+    if (location.protocol === 'file:') {
+      handleFileProtocol();
+      return;
+    }
 
-        const notice = document.createElement('div');
-        notice.style.cssText = 'background:#fff8e6; color:#4f3b13; padding:10px 18px; border-bottom:1px solid #e0c068; font-size:13px; text-align:center;';
-        notice.innerHTML = '⚠️ 偵測到 <code>file://</code> 本地開啟 — 使用瀏覽器內建 PDF viewer (Layer 1 保護失效)。<br>' +
-                          '部署到 GitHub Pages 後會自動切換為 PDF.js viewer (含 Layer 1)。<br>' +
-                          '本地完整測試:<code>cd embedded-computer-vision-course &amp;&amp; python -m http.server 8000</code> 然後開 <code>http://localhost:8000/</code>';
-        document.body.insertBefore(notice, document.querySelector('.viewer-bar').nextSibling);
-        return;
-      }
+    // 確認本機 PDF.js library 有載入
+    if (typeof pdfjsLib === 'undefined') {
+      showError('❌ PDF.js library 沒載入 (本機檔 <code>shared/pdfjs/pdf.min.js</code>)<br><br>' +
+                '請確認 <code>shared/pdfjs/pdf.min.js</code> 與 <code>pdf.worker.min.js</code> 存在。<br><br>' +
+                '<a href="' + file + '" target="_blank">改用瀏覽器直接開啟 PDF</a>');
+      return;
+    }
 
-      // 正常路徑:PDF.js (HTTPS / localhost)
-      // 先確認 library 已載入
-      const check = waitForLibrary(10);
-      if (check === false) return;  // library 載入失敗
-      if (check === null) {
-        // pending: library 還在載入中,等 callback
-        // 用 polling 等到 library load 完才往下走
-        const waitTimer = setInterval(() => {
-          if (typeof pdfjsLib !== 'undefined') {
-            clearInterval(waitTimer);
-            actuallyLoadPDF();
-          } else if (window._pdfLibError) {
-            clearInterval(waitTimer);
-            showError('❌ PDF.js library 載入失敗:<code>' + window._pdfLibError + '</code>');
-          }
-        }, 200);
-        // 給 8 秒總 timeout
-        setTimeout(() => {
-          clearInterval(waitTimer);
-          if (typeof pdfjsLib === 'undefined') {
-            showError('❌ PDF.js library 載入逾時<br><br>' +
-                      '<a href="' + file + '" target="_blank" style="color:#7dd3fc;">改用瀏覽器直接開啟 PDF (Layer 1 失效)</a>');
-          }
-        }, 8000);
-        return;
-      }
-      actuallyLoadPDF();
+    // 設定 worker (也用本機檔)
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdfjs/pdf.worker.min.js';
 
-      function actuallyLoadPDF() {
-        // 設定 worker (用相同 CDN 的 worker 檔)
-        pdfjsLib.GlobalWorkerOptions.workerSrc =
-          'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+    setStatus('⏳ 開始載入 PDF...');
 
-        setStatus('⏳ 開始載入 PDF...');
+    // 8 秒 timeout
+    let timedOut = false;
+    const loadTimeout = setTimeout(function () {
+      timedOut = true;
+      showError('❌ PDF 載入逾時 (8 秒)<br><br>' +
+                '<a href="' + file + '" target="_blank">改用瀏覽器直接開啟 PDF</a>');
+    }, 8000);
 
-        // 8 秒 timeout
-        let timedOut = false;
-        const loadTimeout = setTimeout(() => {
-          timedOut = true;
-          showError('❌ PDF 載入逾時 (8 秒)<br><br>' +
-                    '可能原因:檔案太大、PDF.js worker 卡住、或網路不穩。<br>' +
-                    '<a href="' + file + '" target="_blank" style="color:#7dd3fc;">改用瀏覽器直接開啟 PDF</a>');
-        }, 8000);
+    pdfjsLib.getDocument(file).promise.then(function (pdf) {
+      if (timedOut) return;
+      clearTimeout(loadTimeout);
+      pdfDoc = pdf;
+      document.getElementById('page-count').textContent = pdf.numPages;
+      document.getElementById('page-input').max = pdf.numPages;
+      content.style.display = 'none';
+      canvas.style.display = 'block';
+      fitWidth();
+    }).catch(function (err) {
+      if (timedOut) return;
+      clearTimeout(loadTimeout);
+      console.error('PDF load error:', err);
+      showError('❌ 無法載入 PDF<br><br><code>' + (err.message || err) + '</code><br><br>' +
+                '<a href="' + file + '" target="_blank">改用瀏覽器直接開啟 PDF</a>');
+    });
 
-        pdfjsLib.getDocument(file).promise
-          .then(pdf => {
-            if (timedOut) return;
-            clearTimeout(loadTimeout);
-            pdfDoc = pdf;
-            document.getElementById('page-count').textContent = pdf.numPages;
-            document.getElementById('page-input').max = pdf.numPages;
-            content.style.display = 'none';
-            canvas.style.display = 'block';
-            // 起手用「符合寬度」
-            fitWidth();
-          })
-          .catch(err => {
-            if (timedOut) return;
-            clearTimeout(loadTimeout);
-            console.error('PDF load error:', err);
-            showError('❌ 無法載入 PDF<br><br><code>' + (err.message || err) + '</code><br><br>' +
-                      '<a href="' + file + '" target="_blank" style="color:#7dd3fc;">改用瀏覽器直接開啟 PDF</a>');
-          });
-      }
+    // === 函式定義 ===
+
+    function handleFileProtocol() {
+      document.querySelector('.viewer-controls').style.display = 'none';
+      content.style.display = 'none';
+      canvas.style.display = 'none';
+      const main = document.querySelector('main.viewer-main');
+      main.style.padding = '0';
+
+      const embed = document.createElement('embed');
+      embed.src = file + '#toolbar=0&navpanes=0';
+      embed.type = 'application/pdf';
+      embed.style.cssText = 'width:100%; height:calc(100vh - 110px); border:0;';
+      main.appendChild(embed);
+
+      const notice = document.createElement('div');
+      notice.style.cssText = 'background:#fff8e6; color:#4f3b13; padding:10px 18px; border-bottom:1px solid #e0c068; font-size:13px; text-align:center;';
+      notice.innerHTML = '⚠️ 偵測到 <code>file://</code> 本地開啟 — 使用瀏覽器內建 PDF viewer (Layer 1 失效)。<br>' +
+                        '完整測試請跑 <code>python -m http.server 8000</code> 然後開 <code>http://localhost:8000/</code>';
+      document.body.insertBefore(notice, document.querySelector('.viewer-bar').nextSibling);
     }
 
     function renderPage(num) {
@@ -283,12 +238,11 @@
         return;
       }
       isRendering = true;
-      pdfDoc.getPage(num).then(page => {
-        const viewport = page.getViewport({ scale });
+      pdfDoc.getPage(num).then(function (page) {
+        const viewport = page.getViewport({ scale: scale });
         canvas.width = viewport.width;
         canvas.height = viewport.height;
-        const renderCtx = { canvasContext: ctx, viewport };
-        page.render(renderCtx).promise.then(() => {
+        page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
           isRendering = false;
           document.getElementById('page-input').value = num;
           if (pendingPage !== null) {
@@ -301,22 +255,16 @@
     }
 
     function goPrev() {
-      if (pageNum > 1) { pageNum--; renderPage(pageNum); }
+      if (pdfDoc && pageNum > 1) { pageNum--; renderPage(pageNum); }
     }
     function goNext() {
-      if (pageNum < pdfDoc.numPages) { pageNum++; renderPage(pageNum); }
+      if (pdfDoc && pageNum < pdfDoc.numPages) { pageNum++; renderPage(pageNum); }
     }
-    function zoomIn() {
-      scale *= 1.2;
-      renderPage(pageNum);
-    }
-    function zoomOut() {
-      scale /= 1.2;
-      renderPage(pageNum);
-    }
+    function zoomIn() { if (pdfDoc) { scale *= 1.2; renderPage(pageNum); } }
+    function zoomOut() { if (pdfDoc) { scale /= 1.2; renderPage(pageNum); } }
     function fitWidth() {
       if (!pdfDoc) return;
-      pdfDoc.getPage(pageNum).then(page => {
+      pdfDoc.getPage(pageNum).then(function (page) {
         const viewport = page.getViewport({ scale: 1 });
         const main = document.querySelector('main.viewer-main');
         scale = (main.clientWidth - 40) / viewport.width;
@@ -324,23 +272,23 @@
       });
     }
 
+    // === 事件綁定 ===
     document.getElementById('prev').addEventListener('click', goPrev);
     document.getElementById('next').addEventListener('click', goNext);
     document.getElementById('zoom-in').addEventListener('click', zoomIn);
     document.getElementById('zoom-out').addEventListener('click', zoomOut);
     document.getElementById('fit-width').addEventListener('click', fitWidth);
 
-    document.getElementById('page-input').addEventListener('change', e => {
+    document.getElementById('page-input').addEventListener('change', function (e) {
       const n = parseInt(e.target.value);
-      if (n >= 1 && n <= pdfDoc.numPages) {
+      if (pdfDoc && n >= 1 && n <= pdfDoc.numPages) {
         pageNum = n;
         renderPage(pageNum);
       }
     });
 
-    document.addEventListener('keydown', e => {
+    document.addEventListener('keydown', function (e) {
       if (!pdfDoc) return;
-      // 不在 input 內才響應
       if (document.activeElement.tagName === 'INPUT') return;
       if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); goPrev(); }
       else if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); goNext(); }
@@ -348,10 +296,9 @@
       else if (e.key === '-') { e.preventDefault(); zoomOut(); }
     });
 
-    // 禁右鍵 (Layer 1)
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    // 禁拖拉
-    canvas.addEventListener('dragstart', e => e.preventDefault());
+    document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    canvas.addEventListener('dragstart', function (e) { e.preventDefault(); });
+  })();
   </script>
 
 </body>
