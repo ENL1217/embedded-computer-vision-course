@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W1 課程介紹與環境建置 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <!-- 麵包屑 + 操作 -->
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../../嵌入式電腦視覺_教學指引.html">課程首頁</a> /
+      <a href="../index.html">Part I 影像處理基礎</a> /
+      W1 課程介紹與環境建置
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+      <a class="btn primary" href="../../作業與評量/W1_Colab讀圖/index.html">開始 W1 作業</a>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <header class="hero">
+    <p class="eyebrow">Week 1 · Part I 影像處理基礎</p>
+    <h1>W1 課程介紹與環境建置</h1>
+    <p>整門課第一堂。建立對「電腦視覺是什麼」的認識,把 Colab + OpenCV 環境跑通。這套環境會一路用到 W5,且在 Part 2/3 也是「Colab 驗算法 → Android 部署」工作流的前半。</p>
+  </header>
+
+  <!-- 主版面:左 sidebar + 右 main -->
+  <div class="layout">
+
+    <!-- Sticky Sidebar -->
+    <aside class="sidebar">
+      <h2>本頁導覽</h2>
+      <a href="#schedule">本週要做的事</a>
+      <a href="#files">教材檔案</a>
+      <a href="#three-layer">CV 三層架構</a>
+      <a href="#workflow">工作流原則</a>
+      <a href="#challenges">9 個挑戰</a>
+      <a href="#grading">評分機制</a>
+      <a href="#assignment">W1 作業</a>
+      <a href="#checklist">學生檢核</a>
+      <a href="#teacher">講師資訊</a>
+      <a href="#next">下週預告</a>
+    </aside>
+
+    <main>
+
+      <!-- 本週要做的事 -->
+      <section class="section" id="schedule">
+        <h2>本週要做的事</h2>
+        <table>
+          <tr><th>順序</th><th>內容</th><th>預估時間</th></tr>
+          <tr><td>1</td><td>認識 CV 三層架構（Low / Mid / High Level）與 9 個經典挑戰</td><td>60 min</td></tr>
+          <tr><td>2</td><td>看 CV 今天能做什麼（OCR / 生物辨識 / 自駕 / Vision Pro 等）</td><td>30 min</td></tr>
+          <tr><td>3</td><td>課程地圖 + 評分方式 + 加 Line 群組</td><td>20 min</td></tr>
+          <tr><td>4</td><td><strong>動手</strong>:Colab + Google Drive 掛載 + 第一張 OpenCV 圖</td><td>60 min</td></tr>
+          <tr><td>5</td><td>統計同學背景（Python / Colab / OpenCV 經驗）</td><td>10 min</td></tr>
+        </table>
+      </section>
+
+      <!-- 教材檔案 -->
+      <section class="section" id="files">
+        <h2>教材檔案</h2>
+        <ul class="file-list">
+          <li>
+            <a href="2026-03-06 Computer Vision系統課程介紹與環境建置.pdf" target="_blank">
+              2026-03-06 Computer Vision 系統課程介紹與環境建置.pdf
+            </a>
+            <span class="tag">核心投影片</span><br>
+            80 頁,涵蓋 CV 三層架構、9 個挑戰、CV 應用案例、課程地圖、評分機制與 W1 動手做。
+          </li>
+          <li>
+            <a href="../../作業與評量/W1_Colab讀圖/index.html">W1 作業說明</a>
+            <span class="tag warn">作業</span><br>
+            Colab + Google Drive + OpenCV 讀圖。本週唯一作業。
+          </li>
+        </ul>
+      </section>
+
+      <!-- CV 三層架構 -->
+      <section class="section" id="three-layer">
+        <h2>課程的三層架構（學生帶走的核心觀念）</h2>
+        <div class="pipeline">   High Level Vision  → Category / Activity recognition / Deep understanding
+        ↑
+   Mid Level Vision   → 3D Reconstruction / Depth / Motion Estimation
+        ↑
+   Low Level Vision   → Measurements / Enhancement / Region / Features
+        ↑
+        影像本身(pixels)</div>
+        <p style="margin-top:14px;">整門課的弧線:</p>
+        <div class="grid three">
+          <div class="card soft">
+            <h3>Part 1 (W1-W5)</h3>
+            <p><strong>Low Level</strong>——從像素到色彩,純 Colab</p>
+          </div>
+          <div class="card soft">
+            <h3>Part 2 (W6-W8)</h3>
+            <p><strong>Mid Level</strong>——Android 上做古典特徵</p>
+          </div>
+          <div class="card soft">
+            <h3>Part 3 (W9-W15)</h3>
+            <p><strong>High Level</strong>——AI 五範式做 RPS + 研究方向</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 工作流原則 -->
+      <section class="section" id="workflow">
+        <h2>整門課的工作流原則 ⭐</h2>
+        <p>從 Part 2 開始,每週都會走「Colab 驗算法 → Android 部署」這條工作流。本週先讓學生把 Colab 那半邊跑熟。</p>
+        <div class="grid">
+          <div class="card">
+            <h3>階段一:Colab 驗算法</h3>
+            <ul>
+              <li>靜態圖 / webcam</li>
+              <li>Python pipeline 跑通</li>
+              <li>即時 print / 改 cell</li>
+              <li>專注「算法是否會贏」</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>階段二:Android 嵌入式系統部署</h3>
+            <ul>
+              <li>CameraX ImageAnalysis 真實串流</li>
+              <li>Chaquopy 嵌入 Python</li>
+              <li>Java 處理 frame + UI</li>
+              <li>專注「資料進出格式對不對」</li>
+            </ul>
+          </div>
+        </div>
+        <div class="info" style="margin-top:14px;">
+          <strong>為什麼這樣切?</strong> Android 上 Python 不好除錯——沒 REPL、log 隔層、改一行要重 build。
+          <strong>演算法穩了才搬,搬過去不重新驗算法,只確認資料進出與格式轉換</strong>。這個原則整門課反覆使用。
+          W1-W5 是 Colab 階段的基礎訓練,W6 之後才開始搬。
+        </div>
+      </section>
+
+      <!-- 9 個挑戰 -->
+      <section class="section" id="challenges">
+        <h2>CV 為什麼難?9 個挑戰</h2>
+        <p>來自投影片 p.30-38。這 9 個挑戰會在 W6-W7 古典特徵被部分解決,但完整解決要等 W10 ML/DL 之後。</p>
+        <ol class="flow">
+          <li><strong>Viewpoint variation</strong> 視角變</li>
+          <li><strong>Illumination</strong> 光線變</li>
+          <li><strong>Occlusion</strong> 遮擋</li>
+          <li><strong>Scale</strong> 尺寸變</li>
+          <li><strong>Deformation</strong> 變形</li>
+          <li><strong>Background clutter</strong> 背景雜亂</li>
+          <li><strong>Intra-class variation</strong> 同類差異大</li>
+          <li><strong>Local ambiguity</strong> 局部歧義</li>
+          <li><strong>The world behind the image</strong> 影像背後的世界</li>
+        </ol>
+      </section>
+
+      <!-- 評分機制 -->
+      <section class="section" id="grading">
+        <h2>評分機制</h2>
+        <table>
+          <tr><th>項目</th><th>比重</th></tr>
+          <tr><td>出勤與課堂作業</td><td><strong>60%</strong></td></tr>
+          <tr><td>期中考</td><td><strong>20%</strong></td></tr>
+          <tr><td>期末專題</td><td><strong>20%</strong></td></tr>
+        </table>
+        <p style="margin-top:10px;" class="muted">期末專題在 W15 報告。</p>
+      </section>
+
+      <!-- W1 作業 -->
+      <section class="section" id="assignment">
+        <h2>W1 作業 ｜ Colab + OpenCV 讀圖</h2>
+
+        <h3>一、作業目標</h3>
+        <p>熟悉 Google Colab 環境,透過 OpenCV (cv2) 讀取、顯示、儲存影像,並學會將 Google Drive 與 Colab 連結。整門課所有 Colab 端的實作都從這裡開始。</p>
+
+        <h3>二、作業內容</h3>
+        <ol class="flow">
+          <li>使用 Google Colab 建立新的 Python Notebook</li>
+          <li>將 Google Drive 掛載至 Colab</li>
+          <li>切換到自訂資料夾(例如 <code>/content/drive/My Drive/Colab Notebooks/Image Process</code>)</li>
+          <li>確認資料夾內容</li>
+          <li>讀取自訂影像檔(例如 <code>Lenna.bmp</code>)</li>
+          <li>檢查檔案是否存在</li>
+          <li>以灰階模式讀取影像</li>
+          <li>顯示影像尺寸</li>
+          <li>顯示影像</li>
+          <li>將影像儲存為 <code>resize.jpg</code></li>
+        </ol>
+
+        <h3>三、參考程式碼</h3>
+<pre><code>import os
+import cv2
+from google.colab.patches import cv2_imshow
+from google.colab import drive
+
+# 掛載 Google Drive
+drive.mount('/content/drive')
+
+# 切換至指定資料夾
+os.chdir('/content/drive/My Drive/Colab Notebooks/Image Process')
+os.listdir()  # 確認目錄內容
+
+# 設定影像路徑
+image_path = "Lenna.bmp"
+
+# 檢查檔案是否存在
+if not os.path.exists(image_path):
+    print(f"Error: Image file not found: {image_path}")
+    exit()
+
+# 讀取影像(灰階)
+image = cv2.imread(image_path, 0)
+print(image.shape)
+
+# 顯示影像
+cv2_imshow(image)
+
+# 儲存影像
+cv2.imwrite('resize.jpg', image)</code></pre>
+
+        <h3>四、繳交內容</h3>
+        <p>執行成功的<strong>截圖</strong>(含影像、shape 輸出、儲存結果)。</p>
+
+        <h3>五、注意事項</h3>
+        <ul>
+          <li>請確認測試圖片 <code>Lenna.bmp</code> 已放置於指定資料夾</li>
+          <li>若檔案不存在,程式應顯示錯誤訊息</li>
+          <li>請依照步驟執行並觀察執行結果</li>
+          <li>若有問題可先詢問 Colab 內建的 Gemini,再問老師</li>
+        </ul>
+      </section>
+
+      <!-- 學生檢核表 -->
+      <section class="section" id="checklist">
+        <h2>學生檢核表</h2>
+        <p>下課前要打勾的:</p>
+        <ul class="checklist">
+          <li>我有 Google 帳號可以登入 Colab</li>
+          <li>我能在 Colab 開新 notebook</li>
+          <li>我能把 Google Drive 掛載到 Colab</li>
+          <li>我有跑出 Lenna.bmp 的灰階圖</li>
+          <li>我有把結果存成 <code>resize.jpg</code></li>
+          <li>我已加入課程 Line 群組</li>
+        </ul>
+      </section>
+
+      <!-- 講師資訊 -->
+      <section class="section" id="teacher">
+        <h2>講師資訊</h2>
+        <div class="grid">
+          <div class="card soft">
+            <h3>授課教師</h3>
+            <p>謝昇憲</p>
+          </div>
+          <div class="card soft">
+            <h3>辦公室</h3>
+            <p>EN306</p>
+          </div>
+          <div class="card soft">
+            <h3>Office Hour</h3>
+            <p>每週三 13:00–14:00</p>
+          </div>
+          <div class="card soft">
+            <h3>Email</h3>
+            <p><code>georgeh@yuntech.edu.tw</code></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 下週預告 -->
+      <section class="section" id="next">
+        <h2>下週預告 (W2)</h2>
+        <p>進入 <strong>Camera Pipeline</strong>——從 Sensor → ISP → Raw → Color 的成像流程,並架起 <strong>Colab + 本地 Webcam 即時串流</strong>(這是後面所有「即時影像」實驗的基礎)。</p>
+        <p>W2 的串流架構講義已準備好:</p>
+        <div class="link-grid">
+          <a class="resource" href="../W2 Camera Pipeline 與 Colab Webcam/本週教學指引.html">
+            W2 本週教學指引
+            <span>Camera Pipeline + Colab Webcam 完整流程</span>
+          </a>
+          <a class="resource" href="../W2 Camera Pipeline 與 Colab Webcam/W2 colab+webcam.html" target="_blank">
+            W2 Colab Webcam 補充教材
+            <span>Local Runtime + 高解析攝影機 + 除錯腳本</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 底部上下週導覽 -->
+      <div class="footer-nav">
+        <a class="btn" href="#top">回到本頁頂端</a>
+        <a class="btn primary" href="../W2 Camera Pipeline 與 Colab Webcam/本週教學指引.html">W2 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學 ｜ 本教材限本課程修課學生使用
+  </footer>
+
+</div>
+
+<script src="../../shared/js/protection.js"></script>
+</body>
+</html>

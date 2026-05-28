@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part III AI 電腦視覺技術 ｜ 嵌入式電腦視覺系統</title>
+  <link rel="stylesheet" href="../shared/css/course.css">
+</head>
+<body>
+<div class="page" id="top">
+
+  <div class="topbar">
+    <div class="crumbs">
+      <a href="../嵌入式電腦視覺_教學指引.html">課程首頁</a> / Part III AI 電腦視覺技術
+    </div>
+    <div class="actions">
+      <a class="btn" href="../嵌入式電腦視覺_教學指引.html">回課程首頁</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">Part III · W9 – W15 · 五範式 + 研究地圖 + 期末</p>
+    <h1>Part III AI 電腦視覺技術</h1>
+    <p>同一個 RPS 任務,用五種完全不同方法做。看完整個系列,你會建立「選工具」的工程判斷力——什麼問題該用古典、什麼問題該換 AI。</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>本 Part 週次</h2>
+      <a href="W9 傳統 CV 規則法 RPS/本週教學指引.html">W9 古典規則法</a>
+      <a href="W10 ML DL RPS/本週教學指引.html">W10 ML / DL</a>
+      <a href="W11 YOLO Tracking/本週教學指引.html">W11 YOLO + Tracking</a>
+      <a href="W12 MediaPipe 骨架/本週教學指引.html">W12 MediaPipe</a>
+      <a href="W13 ML Kit Vision/本週教學指引.html">W13 ML Kit</a>
+      <a href="W14 CV 研究地圖/本週教學指引.html">W14 CV 研究地圖</a>
+      <a href="W15 期末專題報告/本週教學指引.html">W15 期末專題</a>
+    </aside>
+
+    <main>
+      <section class="section">
+        <h2>五範式做 RPS</h2>
+        <table>
+          <tr><th>週</th><th>範式</th><th>核心工具</th><th>預期正確率</th></tr>
+          <tr><td>W9</td><td>規則法</td><td>HSV + 形態學 + 凸缺陷</td><td>60-80%</td></tr>
+          <tr><td>W10</td><td>ML/DL</td><td>sklearn SVM + HoG / TFLite MobileNetV2</td><td>85-95%</td></tr>
+          <tr><td>W11</td><td>物件偵測</td><td>YOLOv5 + ByteTrack</td><td>90%+ (含 tracking)</td></tr>
+          <tr><td>W12</td><td>骨架點</td><td>MediaPipe Hands 21 點 landmark</td><td>95%+</td></tr>
+          <tr><td>W13</td><td>一站式 API</td><td>ML Kit Image Labeling</td><td>視場景</td></tr>
+        </table>
+      </section>
+
+      <section class="section">
+        <h2>週次卡片</h2>
+
+        <a class="week-card" href="W9 傳統 CV 規則法 RPS/本週教學指引.html" style="margin-bottom:14px;">
+          <h2>W9 ｜ 傳統 CV 規則法 RPS</h2>
+          <p>用 W6/W7 古典工具(HSV + 形態學 + 凸缺陷)做指縫數法。鋪墊「規則法的天花板」。</p>
+        </a>
+
+        <a class="week-card" href="W10 ML DL RPS/本週教學指引.html" style="margin-bottom:14px;">
+          <h2>W10 ｜ ML / DL RPS</h2>
+          <p>sklearn HoG+SVM(Android Chaquopy) + Tiny CNN + MobileNetV2(Colab Local Runtime)。</p>
+        </a>
+
+        <a class="week-card" href="W11 YOLO Tracking/本週教學指引.html" style="margin-bottom:14px;">
+          <h2>W11 ｜ YOLO + Tracking</h2>
+          <p>YOLOv5 自訓 + Java TFLite API + ByteTrack + Re-ID + Action Recognition。</p>
+        </a>
+
+        <a class="week-card" href="W12 MediaPipe 骨架/本週教學指引.html" style="margin-bottom:14px;">
+          <h2>W12 ｜ MediaPipe 骨架</h2>
+          <p>Hands 21 點 landmark + 內部架構(palm + landmark) + Tasks API 部署。</p>
+        </a>
+
+        <a class="week-card" href="W13 ML Kit Vision/本週教學指引.html" style="margin-bottom:14px;">
+          <h2>W13 ｜ ML Kit Vision</h2>
+          <p>9 大 API(OCR/Barcode/Image Labeling 等) + on-device vs Cloud + Custom Image Labeling。</p>
+        </a>
+
+        <a class="week-card" href="W14 CV 研究地圖/本週教學指引.html" style="margin-bottom:14px;">
+          <h2>W14 ｜ CV 研究地圖</h2>
+          <p>整門課回顧 + 八大研究軸線 + 2024-2026 熱門研究方向 + 怎麼讀 paper + 啟動研究。</p>
+        </a>
+
+        <a class="week-card" href="W15 期末專題報告/本週教學指引.html">
+          <h2>W15 ｜ 期末專題報告</h2>
+          <p>學期最後一週。期末專題 demo + 報告 + 程式碼三件套繳交。</p>
+        </a>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    嵌入式電腦視覺系統 ｜ 114-2 ｜ 國立雲林科技大學
+  </footer>
+
+</div>
+
+<script src="../shared/js/protection.js"></script>
+</body>
+</html>
